@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { addCategoryService, categoryService } from './category.service';
+import { addCategory, getAllCategories } from './category.service';
 import { CustomError } from '@/utils/custom-error';
 
 export const getCategoriesController = async (
@@ -8,7 +8,7 @@ export const getCategoriesController = async (
         next: NextFunction,
     ): Promise<void> => {
         try {
-            const response = await categoryService();
+            const response = await getAllCategories();
 
             res.status(200).json({
                 message: 'Successfully get categories',
@@ -33,7 +33,7 @@ export const addCategoryController = async (
             throw new CustomError('Category name is required', 400);
         }
 
-        const response = await addCategoryService({ category_name });
+        const response = await addCategory({ category_name });
 
         res.status(201).json({
             message: 'Category successfully created',

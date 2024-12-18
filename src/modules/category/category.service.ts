@@ -1,9 +1,9 @@
 import repo from './category.repo';
 import { CustomError } from '@/utils/custom-error';
 
-export const categoryService = async () => {
+export const getAllCategories = async () => {
     try {
-        const categories = await repo.allCategories();
+        const categories = await repo.getAll();
 
         if (!categories) {
             throw new CustomError('No categories found', 404);
@@ -18,7 +18,7 @@ export const categoryService = async () => {
 };
 
 // Add a new category
-export const addCategoryService = async (categoryData: { category_name: string }) => {
+export const addCategory = async (categoryData: { category_name: string }) => {
     try {
         // Ensure category_name is provided
         if (!categoryData || !categoryData.category_name) {
@@ -26,13 +26,13 @@ export const addCategoryService = async (categoryData: { category_name: string }
         }
 
         // Check if the category already exists
-        const existingCategory = await repo.findCategoryByName(categoryData.category_name);
+        const existingCategory = await repo.findByName(categoryData.category_name);
         if (existingCategory) {
             throw new CustomError('Category already exists', 409);
         }
 
         // Add the category
-        const newCategory = await repo.addCategory(categoryData);
+        const newCategory = await repo.addOne(categoryData);
 
         console.log('New Category Added:', newCategory);
         return newCategory;
