@@ -1,6 +1,9 @@
 import logger from '@/utils/logger';
 import Sequelize from 'sequelize';
 import userModel from './models/user.model';
+import dotenv from 'dotenv';
+import categoryModel from './models/category.model';
+
 import {
     DB_DIALECT,
     DB_HOST,
@@ -50,6 +53,7 @@ sequelize.authenticate();
 
 export const DB = {
     Users: userModel(sequelize),
+    Categories: categoryModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };
