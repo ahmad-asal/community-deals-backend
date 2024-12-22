@@ -13,8 +13,10 @@ export const getUserProfileController = async (
             return;
         }
 
+        const userId = req.params.id;
+
         const accessToken = authorization.split(' ')[1];
-        const response = await getUserProfileService(accessToken);
+        const response = await getUserProfileService(accessToken, userId);
 
         res.status(200).json({ message: 'User data fetched', data: response });
     } catch (error) {
