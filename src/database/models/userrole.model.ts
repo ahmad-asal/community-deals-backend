@@ -57,7 +57,7 @@ export default function (sequelize: Sequelize): typeof UserRoleModel {
         foreignKey: 'roleId',
         // otherKey: 'userId',
         through: UserRoleModel,
-        as: 'users',
+        // as: 'users',
     });
     UserModel.belongsToMany(RoleModel, {
         foreignKey: 'userId',
@@ -65,5 +65,6 @@ export default function (sequelize: Sequelize): typeof UserRoleModel {
         through: UserRoleModel,
         as: 'roles',
     });
+
     return UserRoleModel;
 }
