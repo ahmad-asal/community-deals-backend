@@ -1,6 +1,9 @@
 import logger from '@/utils/logger';
 import Sequelize from 'sequelize';
 import userModel from './models/user.model';
+import roleModel from './models/role.model';
+import UserRoleModel from './models/userrole.model';
+
 import {
     DB_DIALECT,
     DB_HOST,
@@ -31,7 +34,7 @@ const sequelize = new Sequelize.Sequelize(
         define: {
             charset: 'utf8mb4',
             collate: 'utf8mb4_general_ci',
-            underscored: true,
+            // underscored: true, //https://sequelize.org/docs/v6/other-topics/naming-strategies/
             freezeTableName: true,
         },
         pool: {
@@ -49,7 +52,10 @@ const sequelize = new Sequelize.Sequelize(
 sequelize.authenticate();
 
 export const DB = {
-    Users: userModel(sequelize),
+    User: userModel(sequelize),
+    Role: roleModel(sequelize),
+    UserRole: UserRoleModel(sequelize),
+
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };

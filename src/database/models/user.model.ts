@@ -50,7 +50,7 @@ export default function (sequelize: Sequelize): typeof UserModel {
             updated_at: DataTypes.DATE,
         },
         {
-            tableName: 'users',
+            tableName: 'user',
             sequelize,
             createdAt: 'created_at',
             updatedAt: 'updated_at',

@@ -5,6 +5,6 @@ export const repo = {
     getUserProfile: async (
         userId: string | undefined,
     ): Promise<User | null> => {
-        return await DB.Users.findOne({ where: { id: userId } });
+        return await DB.User.findOne({ where: { id: userId } });
     },
 };
