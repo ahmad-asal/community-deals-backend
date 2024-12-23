@@ -1,6 +1,7 @@
 import logger from '@/utils/logger';
 import Sequelize from 'sequelize';
 import userModel from './models/user.model';
+import categoryModel from './models/category.model';
 import roleModel from './models/role.model';
 import UserRoleModel from './models/userrole.model';
 
@@ -47,7 +48,7 @@ export const DB = {
     User: userModel(sequelize),
     Role: roleModel(sequelize),
     UserRole: UserRoleModel(sequelize),
-
+    Categories: categoryModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };
