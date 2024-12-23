@@ -10,7 +10,9 @@
         "lint": "eslint --ignore-path .gitignore --ext .ts src/",
         "lint:fix": "npm run lint -- --fix",
         "migration:generate": "sequelize migration:generate --name",
-        "migration": "sequelize db:migrate"
+        "migration": "sequelize db:migrate",
+        "seed:generate": "npx sequelize-cli seed:generate --name",
+        "seed:all": "npx sequelize-cli db:seed:all"
     },
     "author": "Murad",
     "license": "MIT",

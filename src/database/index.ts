@@ -1,8 +1,9 @@
 import logger from '@/utils/logger';
 import Sequelize from 'sequelize';
 import userModel from './models/user.model';
-import dotenv from 'dotenv';
 import categoryModel from './models/category.model';
+import roleModel from './models/role.model';
+import UserRoleModel from './models/userrole.model';
 
 import {
     DB_DIALECT,
@@ -13,15 +14,7 @@ import {
     DB_USERNAME,
     NODE_ENV,
 } from '@/config';
-console.log({
-    DB_DIALECT,
-    DB_HOST,
-    DB_NAME,
-    DB_PASSWORD,
-    DB_PORT,
-    DB_USERNAME,
-    NODE_ENV,
-});
+
 const sequelize = new Sequelize.Sequelize(
     DB_NAME as string,
     DB_USERNAME as string,
@@ -34,7 +27,7 @@ const sequelize = new Sequelize.Sequelize(
         define: {
             charset: 'utf8mb4',
             collate: 'utf8mb4_general_ci',
-            underscored: true,
+            // underscored: true, //https://sequelize.org/docs/v6/other-topics/naming-strategies/
             freezeTableName: true,
         },
         pool: {
@@ -52,7 +45,9 @@ const sequelize = new Sequelize.Sequelize(
 sequelize.authenticate();
 
 export const DB = {
-    Users: userModel(sequelize),
+    User: userModel(sequelize),
+    Role: roleModel(sequelize),
+    UserRole: UserRoleModel(sequelize),
     Categories: categoryModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
