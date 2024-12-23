@@ -7,3 +7,18 @@ export interface User {
     created_at: string | undefined;
     updated_at: string | undefined;
 }
+
+export interface Role {
+    id?: string;
+    name: string;
+    created_at: string | undefined;
+    updated_at: string | undefined;
+}
+
+export interface UserRole {
+    id?: string;
+    userId: number;
+    roleId: number;
+    created_at: string | undefined;
+    updated_at: string | undefined;
+}
