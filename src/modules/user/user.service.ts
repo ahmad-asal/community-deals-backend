@@ -4,13 +4,13 @@ import { verifyJWT } from '@/middlewares/jwt.service';
 import { JWT_ACCESS_TOKEN_SECRET } from '@/config';
 import { User } from '@/interfaces/user.interfaces';
 
-export const getUserProfileService = async (accessToken: string) => {
+export const getUserProfileService = async (accessToken: string, id?:any) => {
     const decodeToken = await verifyJWT(
         accessToken,
         JWT_ACCESS_TOKEN_SECRET as string,
     );
 
-    const userId = decodeToken.userId;
+    const userId = id || decodeToken.userId;
 
     const user = await repo.getUserProfile(userId);
     if (!user) {
