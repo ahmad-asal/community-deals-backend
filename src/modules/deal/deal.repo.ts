@@ -32,6 +32,7 @@ const repo = {
         categoryId: number;
         status: 'In Review' | 'Approved' | 'Rejected';
         imageUrls: string[]; // Array of image URLs to associate with the deal
+        expiryDate: Date | null
     }): Promise<DealModel | null> => {
         try {
             // Create the deal
@@ -40,6 +41,7 @@ const repo = {
                 description: deals_data.description,
                 categoryId: deals_data.categoryId,
                 status: 'In Review',
+                expiryDate: deals_data.expiryDate
             });
 
             // Create the associated image records
