@@ -28,7 +28,7 @@ export const signUpService = async (
         ...userData,
         username,
         password: hashedPassword,
-        status: 'suspended',
+        status: 'pending',
     });
 
     return { user: newUserData };
