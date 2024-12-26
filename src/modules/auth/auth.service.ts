@@ -50,9 +50,13 @@ export const signInService = async (userData: User) => {
         throw new CustomError('Email or password is invalid', 401);
     }
 
+    if (user.status !== 'active') {
+        throw new CustomError('account is not active', 403);
+    }
+
     const payload = {
         userId: user.id,
-        roles: user.roles.map((role: { name: string }) => role.name),
+        roles: user.roles.map((role: { name: string; id: number }) => role.id),
     };
     const accessToken = generateJWT(payload, JWT_ACCESS_TOKEN_SECRET as string);
 

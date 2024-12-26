@@ -27,24 +27,7 @@ export const repo = {
         });
         return users;
     },
-    // approveUser: async (): Promise<User[]> => {
-    //     const userFound = await DB.User.findOne({
-    //         // raw: true, // the cause duplication of  the many side
-    //         // plain: true,
-    //         include: [
-    //             {
-    //                 model: DB.Role,
-    //                 attributes: ['name'],
-    //                 through: { attributes: [] },
-    //                 as: 'roles',
-    //             },
-    //         ],
-    //     });
-    //     if (userFound?.roles?.include) {
-    //         console.log(userFound);
-    //     }
-    //     return [];
-    // },
+
     userExist: async (userId: number | undefined): Promise<boolean | null> => {
         const user = await DB.User.findOne({ where: { id: userId } });
         return user !== null;

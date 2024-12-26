@@ -15,7 +15,7 @@ userRouter.get('/all', authMiddleware, getAll);
 userRouter.put(
     '/:id/updatestatus',
     authMiddleware,
-    authorizeRole(rolesTypes.admin),
+    authorizeRole([rolesTypes.admin]),
     updateStatus,
 );
 

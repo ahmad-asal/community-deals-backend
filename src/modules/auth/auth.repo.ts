@@ -8,7 +8,7 @@ const repo = {
             include: [
                 {
                     model: DB.Role,
-                    attributes: ['name'],
+                    attributes: ['id', 'name'],
                     through: { attributes: [] },
                     as: 'roles',
                     required: false,
