@@ -4,6 +4,7 @@ import userModel from './models/user.model';
 import categoryModel from './models/category.model';
 import roleModel from './models/role.model';
 import UserRoleModel from './models/userrole.model';
+import DealModel from './models/deal.model';
 
 import {
     DB_DIALECT,
@@ -15,7 +16,7 @@ import {
     NODE_ENV,
 } from '@/config';
 
-const sequelize = new Sequelize.Sequelize(
+export const sequelize = new Sequelize.Sequelize(
     DB_NAME as string,
     DB_USERNAME as string,
     DB_PASSWORD,
@@ -49,6 +50,7 @@ export const DB = {
     Role: roleModel(sequelize),
     UserRole: UserRoleModel(sequelize),
     Categories: categoryModel(sequelize),
+    Deals: DealModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };
