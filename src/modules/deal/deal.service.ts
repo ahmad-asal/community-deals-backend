@@ -14,3 +14,14 @@ export const getAllDeals = async () => {
         throw new CustomError('Failed to fetch deals', 500);
     }
 };
+
+export const addOneDeal = async (DealsData: any) => {
+    try {
+        const newDeal = await repo.addOne(DealsData);
+        return newDeal;
+    } catch (error) {
+        console.error('Error adding deal:', error);
+        throw new CustomError('Failed to add a deal', 500);
+    }
+};
+

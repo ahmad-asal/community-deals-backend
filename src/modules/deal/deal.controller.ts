@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { getAllDeals } from './deal.service';
+import { addOneDeal, getAllDeals } from './deal.service';
 
 export const DealsController = async (
     req: Request,
@@ -17,3 +17,21 @@ export const DealsController = async (
         next(error);
     }
 };
+
+export const addOneController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const response = await addOneDeal(req.body);
+
+        res.status(201).json({
+            message: 'deal successfully created',
+            data: response,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+

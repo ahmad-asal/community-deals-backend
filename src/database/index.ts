@@ -15,6 +15,7 @@ import {
     DB_USERNAME,
     NODE_ENV,
 } from '@/config';
+import dealImageModel from './models/dealImage.model';
 
 export const sequelize = new Sequelize.Sequelize(
     DB_NAME as string,
@@ -51,6 +52,7 @@ export const DB = {
     UserRole: UserRoleModel(sequelize),
     Categories: categoryModel(sequelize),
     Deals: DealModel(sequelize),
+    DealImages: dealImageModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };
