@@ -1,5 +1,8 @@
 import express from 'express';
-import { addCategoryController, getCategoriesController } from './category.controller';
+import {
+    addCategoryController,
+    getCategoriesController,
+} from './category.controller';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 
 const categoryRouter = express.Router();

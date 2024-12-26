@@ -26,7 +26,9 @@ export const addCategory = async (categoryData: { category_name: string }) => {
         }
 
         // Check if the category already exists
-        const existingCategory = await repo.findByName(categoryData.category_name);
+        const existingCategory = await repo.findByName(
+            categoryData.category_name,
+        );
         if (existingCategory) {
             throw new CustomError('Category already exists', 409);
         }

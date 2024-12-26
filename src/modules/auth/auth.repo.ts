@@ -11,6 +11,7 @@ const repo = {
                     attributes: ['name'],
                     through: { attributes: [] },
                     as: 'roles',
+                    required: false,
                 },
             ],
         });

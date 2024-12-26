@@ -28,6 +28,7 @@ export const signUpService = async (
         ...userData,
         username,
         password: hashedPassword,
+        status: 'suspended',
     });
 
     return { user: newUserData };
@@ -51,12 +52,9 @@ export const signInService = async (userData: User) => {
 
     const payload = {
         userId: user.id,
+        roles: user.roles.map((role: { name: string }) => role.name),
     };
-
-    const accessToken = await generateJWT(
-        payload,
-        JWT_ACCESS_TOKEN_SECRET as string,
-    );
+    const accessToken = generateJWT(payload, JWT_ACCESS_TOKEN_SECRET as string);
 
     return { user, accessToken };
 };

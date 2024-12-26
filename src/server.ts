@@ -6,6 +6,7 @@ import { DB } from '@database/index';
 import { PORT } from './config';
 import { errorHandler } from './utils/error-handler';
 import { swaggerSpec, swaggerUi } from './utils/swagger';
+import { userStatus } from './interfaces/user.interfaces';
 
 const appServer = express();
 const port = PORT;
@@ -63,3 +64,11 @@ DB.sequelize
     .catch(error => {
         logger.error('Unable to connect to the database:', error);
     });
+
+// DB.User.create({
+//     username: 'enumTest',
+//     name: 'enumtest',
+//     email: 'enumtest',
+//     password: 'emutest',
+//     status: userStatus.active,
+// });

@@ -1,5 +1,10 @@
 import { DB } from '@/database';
-import { User } from '@/interfaces/user.interfaces';
+import {
+    rolesList,
+    rolesTypes,
+    User,
+    userStatus,
+} from '@/interfaces/user.interfaces';
 
 export const repo = {
     getUserProfile: async (
@@ -10,8 +15,6 @@ export const repo = {
 
     getAllUsers: async (): Promise<User[]> => {
         const users = await DB.User.findAll({
-            // raw: true, // the cause duplication of  the many side
-            // plain: true,
             include: [
                 {
                     model: DB.Role,
@@ -23,5 +26,66 @@ export const repo = {
             ],
         });
         return users;
+    },
+    // approveUser: async (): Promise<User[]> => {
+    //     const userFound = await DB.User.findOne({
+    //         // raw: true, // the cause duplication of  the many side
+    //         // plain: true,
+    //         include: [
+    //             {
+    //                 model: DB.Role,
+    //                 attributes: ['name'],
+    //                 through: { attributes: [] },
+    //                 as: 'roles',
+    //             },
+    //         ],
+    //     });
+    //     if (userFound?.roles?.include) {
+    //         console.log(userFound);
+    //     }
+    //     return [];
+    // },
+    userExist: async (userId: number | undefined): Promise<boolean | null> => {
+        const user = await DB.User.findOne({ where: { id: userId } });
+        return user !== null;
+    },
+
+    getUserRoles: async (
+        userId: string | undefined,
+    ): Promise<rolesList | null> => {
+        const user = await DB.User.findOne({
+            where: { id: userId },
+            attributes: [],
+            include: [
+                {
+                    model: DB.Role,
+                    attributes: ['name'],
+                    through: { attributes: [] },
+                    as: 'roles',
+                },
+            ],
+        });
+        return user?.roles;
+    },
+
+    setUserRole: async (
+        userId: number,
+        roleId: rolesTypes,
+    ): Promise<void | null> => {
+        await DB.UserRole.create({ userId, roleId });
+    },
+
+    updateStatus: async (
+        userId: number,
+        status: userStatus,
+    ): Promise<void | null> => {
+        await DB.User.update(
+            { status },
+            {
+                where: {
+                    id: userId,
+                },
+            },
+        );
     },
 };
