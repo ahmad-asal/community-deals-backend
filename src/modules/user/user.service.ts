@@ -35,25 +35,3 @@ export const getAllUsers = async (accessToken: string): Promise<User[]> => {
 
     return users;
 };
-
-export const approveUser = async (accessToken: string, id?: any) => {
-    const decodeToken = await verifyJWT(
-        accessToken,
-        JWT_ACCESS_TOKEN_SECRET as string,
-    );
-    const userId = id || decodeToken.userId;
-
-    const userExist = await repo.userExist(userId);
-    // const userRoles=null;
-    if (!userExist) {
-        throw new CustomError('User not found', 404);
-    }
-    //  else {
-    //     const userRoles = await repo.assignUserRole(userId,rolesTypes.user);
-
-    //     const userRoles = await repo.getUserRoles(userId);
-    //     if userRoles.length
-    // }
-
-    return;
-};

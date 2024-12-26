@@ -64,11 +64,3 @@ DB.sequelize
     .catch(error => {
         logger.error('Unable to connect to the database:', error);
     });
-
-// DB.User.create({
-//     username: 'enumTest',
-//     name: 'enumtest',
-//     email: 'enumtest',
-//     password: 'emutest',
-//     status: userStatus.active,
-// });
