@@ -1,5 +1,4 @@
 export interface User {
-    roles: any;
     id?: string;
     email: string;
     name: string;
@@ -8,6 +7,7 @@ export interface User {
     created_at: string | undefined;
     updated_at: string | undefined;
     status: userStatus;
+    roles?: Role[];
 }
 
 export interface Role {

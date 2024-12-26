@@ -1,4 +1,4 @@
-import { User } from '@/interfaces/user.interfaces';
+import { Role, User } from '@/interfaces/user.interfaces';
 import { validateSignIn, validateSignUp } from './auth.validator';
 import repo from './auth.repo';
 import { compareSync, hash } from 'bcrypt';
@@ -56,7 +56,7 @@ export const signInService = async (userData: User) => {
 
     const payload = {
         userId: user.id,
-        roles: user.roles.map((role: { name: string; id: number }) => role.id),
+        roles: user.roles!.map((role: Role) => role.id),
     };
     const accessToken = generateJWT(payload, JWT_ACCESS_TOKEN_SECRET as string);
 
