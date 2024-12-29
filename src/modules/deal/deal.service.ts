@@ -25,3 +25,19 @@ export const addOneDeal = async (DealsData: any) => {
     }
 };
 
+export const filterDeals = async (filters: {
+    categoryId?: number;
+    status?: 'In Review' | 'Approved' | 'Rejected';
+    query?: string;
+    createdAt?: string;
+    activity?: 'active' | 'expired';
+}) => {
+    try {
+        const filteredDeals = await repo.filterDeals(filters);
+        return filteredDeals;
+    } catch (error) {
+        console.error('Error filtering deals:', error);
+        throw new CustomError('Failed to filter deals', 500);
+    }
+};
+
