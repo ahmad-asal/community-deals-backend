@@ -1,4 +1,4 @@
-import { User, userStatus } from '@/interfaces/user.interfaces';
+import { rolesList, User, userStatus } from '@/interfaces/user.interfaces';
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 
 export type UserCreationAttributes = Optional<User, 'id' | 'username'>;
@@ -18,7 +18,7 @@ export class UserModel
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    roles: any;
+    roles: rolesList | undefined;
 }
 
 export default function (sequelize: Sequelize): typeof UserModel {

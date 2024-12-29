@@ -7,16 +7,16 @@ export interface User {
     created_at: string | undefined;
     updated_at: string | undefined;
     status: userStatus;
-    roles?: Role[];
+    roles?: rolesList;
 }
 
 export interface Role {
-    id?: string;
+    id: string;
     name: string;
     created_at: string | undefined;
     updated_at: string | undefined;
 }
-
+export type rolesList = Role[];
 export interface UserRole {
     id?: string;
     userId: number;
@@ -24,10 +24,6 @@ export interface UserRole {
     created_at: string | undefined;
     updated_at: string | undefined;
 }
-
-export type rolesList = {
-    roles: [name: string];
-};
 
 export enum rolesTypes {
     user = 1,

@@ -33,9 +33,7 @@ export const repo = {
         return user !== null;
     },
 
-    getUserRoles: async (
-        userId: string | undefined,
-    ): Promise<rolesList | null> => {
+    getUserRoles: async (userId: string | undefined): Promise<rolesList> => {
         const user = await DB.User.findOne({
             where: { id: userId },
             attributes: [],
@@ -48,7 +46,7 @@ export const repo = {
                 },
             ],
         });
-        return user?.roles;
+        return user?.roles || [];
     },
 
     setUserRole: async (
