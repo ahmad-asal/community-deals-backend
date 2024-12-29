@@ -129,7 +129,16 @@ const repo = {
           }
       
           // Fetch filtered deals
-          const filteredDeals = await DealModel.findAll({ where: whereConditions });
+          const filteredDeals = await DealModel.findAll({
+             where: whereConditions,
+             include: [
+                {
+                    model: DealImageModel,
+                    as: 'images',
+                },
+            ],
+            order: [['id', 'DESC']],
+             });
           return filteredDeals;
         } catch (error) {
           console.error('Error filtering deals:', error);
