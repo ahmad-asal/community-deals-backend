@@ -2,8 +2,9 @@ import { CustomError } from '@/utils/custom-error';
 import { verifyJWT } from './jwt.service';
 import { JWT_ACCESS_TOKEN_SECRET } from '@/config';
 import { NextFunction, Request, Response } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
-const decodeToken = async (header: string | undefined) => {
+const decodeToken = async (header: string | undefined): Promise<JwtPayload> => {
     if (!header) {
         throw new CustomError('Authorization header missing', 401);
     }

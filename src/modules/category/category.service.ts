@@ -9,7 +9,6 @@ export const getAllCategories = async () => {
             throw new CustomError('No categories found', 404);
         }
 
-        console.log('Categories:', categories);
         return categories;
     } catch (error) {
         console.error('Error in category:', error);
@@ -26,7 +25,9 @@ export const addCategory = async (categoryData: { category_name: string }) => {
         }
 
         // Check if the category already exists
-        const existingCategory = await repo.findByName(categoryData.category_name);
+        const existingCategory = await repo.findByName(
+            categoryData.category_name,
+        );
         if (existingCategory) {
             throw new CustomError('Category already exists', 409);
         }
@@ -34,7 +35,6 @@ export const addCategory = async (categoryData: { category_name: string }) => {
         // Add the category
         const newCategory = await repo.addOne(categoryData);
 
-        console.log('New Category Added:', newCategory);
         return newCategory;
     } catch (error) {
         console.error('Error adding category:', error);

@@ -1,7 +1,6 @@
 import { DB } from '@/database';
 import { CategoryModel } from '@/database/models/category.model';
 
-
 const repo = {
     getAll: async (): Promise<CategoryModel[] | null> => {
         try {
@@ -13,16 +12,16 @@ const repo = {
             return null;
         }
     },
-    findByName : async (categoryName: string): Promise<CategoryModel | null> => {
+    findByName: async (categoryName: string): Promise<CategoryModel | null> => {
         return await DB.Categories.findOne({
             where: { category_name: categoryName },
         });
     },
-    addOne : async (categoryData: { category_name: string }): Promise<CategoryModel> => {
+    addOne: async (categoryData: {
+        category_name: string;
+    }): Promise<CategoryModel> => {
         return await DB.Categories.create(categoryData);
-    }
-    
-    
+    },
 };
 
 export default repo;

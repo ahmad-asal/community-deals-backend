@@ -3,21 +3,21 @@ import { addCategory, getAllCategories } from './category.service';
 import { CustomError } from '@/utils/custom-error';
 
 export const getCategoriesController = async (
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
-        try {
-            const response = await getAllCategories();
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const response = await getAllCategories();
 
-            res.status(200).json({
-                message: 'Successfully get categories',
-                data: response
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+        res.status(200).json({
+            message: 'Successfully get categories',
+            data: response,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 // Controller to add a new category
 export const addCategoryController = async (
@@ -43,5 +43,3 @@ export const addCategoryController = async (
         next(error);
     }
 };
-
-

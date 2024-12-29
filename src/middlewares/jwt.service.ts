@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-export const generateJWT = async (payload: any, secretKey: string) => {
+export const generateJWT = (payload: any, secretKey: string): string => {
     try {
         const token = `Bearer ${jwt.sign(payload, secretKey)}`;
         return token;

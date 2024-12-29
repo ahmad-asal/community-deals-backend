@@ -1,4 +1,4 @@
-import { User } from '@/interfaces/user.interfaces';
+import { rolesList, User, userStatus } from '@/interfaces/user.interfaces';
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 
 export type UserCreationAttributes = Optional<User, 'id' | 'username'>;
@@ -14,9 +14,11 @@ export class UserModel
     public password!: string;
     public created_at: string | undefined;
     public updated_at: string | undefined;
+    public status!: userStatus;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+    roles: rolesList | undefined;
 }
 
 export default function (sequelize: Sequelize): typeof UserModel {
@@ -45,6 +47,10 @@ export default function (sequelize: Sequelize): typeof UserModel {
             password: {
                 allowNull: false,
                 type: DataTypes.STRING(255),
+            },
+            status: {
+                allowNull: false,
+                type: DataTypes.ENUM('pending', 'active', 'suspended'),
             },
             created_at: DataTypes.DATE,
             updated_at: DataTypes.DATE,

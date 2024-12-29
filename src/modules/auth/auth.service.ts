@@ -1,4 +1,4 @@
-import { User } from '@/interfaces/user.interfaces';
+import { Role, User } from '@/interfaces/user.interfaces';
 import { validateSignIn, validateSignUp } from './auth.validator';
 import repo from './auth.repo';
 import { compareSync, hash } from 'bcrypt';
@@ -28,6 +28,7 @@ export const signUpService = async (
         ...userData,
         username,
         password: hashedPassword,
+        status: 'pending',
     });
 
     return { user: newUserData };
@@ -49,14 +50,15 @@ export const signInService = async (userData: User) => {
         throw new CustomError('Email or password is invalid', 401);
     }
 
+    if (user.status !== 'active') {
+        throw new CustomError('account is not active', 403);
+    }
+
     const payload = {
         userId: user.id,
+        roles: user.roles!.map((role: Role) => role.id),
     };
-
-    const accessToken = await generateJWT(
-        payload,
-        JWT_ACCESS_TOKEN_SECRET as string,
-    );
+    const accessToken = generateJWT(payload, JWT_ACCESS_TOKEN_SECRET as string);
 
     return { user, accessToken };
 };

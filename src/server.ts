@@ -6,6 +6,7 @@ import { DB } from '@database/index';
 import { PORT } from './config';
 import { errorHandler } from './utils/error-handler';
 import { swaggerSpec, swaggerUi } from './utils/swagger';
+import { userStatus } from './interfaces/user.interfaces';
 
 const appServer = express();
 const port = PORT;
