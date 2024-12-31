@@ -30,6 +30,8 @@ export default function (sequelize: Sequelize): typeof UserRoleModel {
             },
             userId: {
                 type: DataTypes.INTEGER,
+                allowNull: false,
+                unique: 'users_roles_unique_constraint',
                 references: {
                     model: 'user',
                     key: 'id',
@@ -37,6 +39,8 @@ export default function (sequelize: Sequelize): typeof UserRoleModel {
             },
             roleId: {
                 type: DataTypes.INTEGER,
+                allowNull: false,
+                unique: 'users_roles_unique_constraint',
                 references: {
                     model: 'role',
                     key: 'id',
