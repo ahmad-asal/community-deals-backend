@@ -14,3 +14,30 @@ export const getAllDeals = async () => {
         throw new CustomError('Failed to fetch deals', 500);
     }
 };
+
+export const addOneDeal = async (DealsData: any) => {
+    try {
+        const newDeal = await repo.addOne(DealsData);
+        return newDeal;
+    } catch (error) {
+        console.error('Error adding deal:', error);
+        throw new CustomError('Failed to add a deal', 500);
+    }
+};
+
+export const filterDeals = async (filters: {
+    categoryId?: number;
+    status?: 'In Review' | 'Approved' | 'Rejected';
+    query?: string;
+    createdAt?: string;
+    activity?: 'active' | 'expired';
+}) => {
+    try {
+        const filteredDeals = await repo.filterDeals(filters);
+        return filteredDeals;
+    } catch (error) {
+        console.error('Error filtering deals:', error);
+        throw new CustomError('Failed to filter deals', 500);
+    }
+};
+
