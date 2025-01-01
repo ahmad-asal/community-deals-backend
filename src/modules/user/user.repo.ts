@@ -57,8 +57,6 @@ export const repo = {
             const [userRole, created] = await DB.UserRole.findOrCreate({
                 where: { userId, roleId },
             });
-
-            console.log({ userRole, created });
         }
     },
 
@@ -76,9 +74,10 @@ export const repo = {
         );
     },
     getStatus: async (userId: number): Promise<string> => {
-        const userStatus = (await DB.User.findByPk(userId, {
-            attributes: ['status'],
-        })) as unknown as string;
-        return userStatus;
+        const { status = '' } =
+            (await DB.User.findByPk(userId, {
+                attributes: ['status'],
+            })) || {};
+        return status;
     },
 };

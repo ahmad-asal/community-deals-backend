@@ -97,21 +97,24 @@ export const updateRoles = async (
         }
 
         const status = await userRepo.getStatus(userId);
-        if (status != '882') {
-            console.log('-------------------');
-            console.log(status);
-            return res.json({ status });
+        if (status != 'active') {
+            throw new CustomError('User is not active', 409);
         }
-        const { rolesList } = req.body;
+        const { roles: rolesList } = req.body;
         for (const roleId of rolesList) {
             const roleExists = await roleRepo.roleExist(roleId);
             if (!roleExists) {
-                throw new CustomError('some of the roles does not exist', 404);
+                throw new CustomError(
+                    'some of the roles are not assignable',
+                    409,
+                );
             }
         }
 
         await userRepo.setUserRole(userId, rolesList);
-        return res.status(200).json({ message: 'User updateted successfully' });
+        return res
+            .status(200)
+            .json({ message: 'User roles updateted successfully' });
     } catch (error) {
         next(error);
     }
