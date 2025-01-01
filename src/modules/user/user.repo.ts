@@ -51,9 +51,13 @@ export const repo = {
 
     setUserRole: async (
         userId: number,
-        roleId: rolesTypes,
+        rolesList: rolesTypes[],
     ): Promise<void | null> => {
-        await DB.UserRole.create({ userId, roleId });
+        for (const roleId of rolesList) {
+            const [userRole, created] = await DB.UserRole.findOrCreate({
+                where: { userId, roleId },
+            });
+        }
     },
 
     updateStatus: async (
@@ -68,5 +72,12 @@ export const repo = {
                 },
             },
         );
+    },
+    getStatus: async (userId: number): Promise<string> => {
+        const { status = '' } =
+            (await DB.User.findByPk(userId, {
+                attributes: ['status'],
+            })) || {};
+        return status;
     },
 };

@@ -11,6 +11,7 @@ module.exports = {
             },
             roleId: {
                 // field: 'roleId',
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'role',
@@ -19,6 +20,7 @@ module.exports = {
             },
             userId: {
                 // field: 'userId',
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'user',
@@ -37,7 +39,7 @@ module.exports = {
             },
         });
     },
-    async down(queryInterface, Sequelize) {
+    async down(queryInterface) {
         await queryInterface.dropTable('user_role');
     },
 };
