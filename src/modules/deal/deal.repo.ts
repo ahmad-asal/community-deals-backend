@@ -1,4 +1,5 @@
 import { DB } from '@/database';
+import { CategoryModel } from '@/database/models';
 import { DealModel } from '@/database/models/deal.model';
 import { DealImageModel } from '@/database/models/dealImage.model';
 import { Op } from 'sequelize';
@@ -144,7 +145,29 @@ const repo = {
           console.error('Error filtering deals:', error);
           throw error;
         }
-      } 
+      },
+      getOne: async (id: number): Promise<DealModel | null> => {
+        try {
+            const deal = await DB.Deals.findOne({
+                where: { id }, // Filter by the provided id
+                include: [
+                    {
+                        model: DealImageModel,
+                        as: 'images', // Match the alias in the association
+                    },
+                    {
+                        model:CategoryModel, 
+                        as: 'category', 
+                        attributes: ['category_name'], 
+                    },    
+                ],
+            });
+            return deal;
+        } catch (error) {
+            console.error('Error fetching deal by id:', error);
+            return null;
+        }
+    },
 };
 
 export default repo;

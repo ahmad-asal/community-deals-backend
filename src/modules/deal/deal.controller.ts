@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { addOneDeal, filterDeals, getAllDeals } from './deal.service';
+import { addOneDeal, filterDeals, getAllDeals, getOneDeal } from './deal.service';
 
 export const DealsController = async (
     req: Request,
@@ -56,6 +56,24 @@ export const filterDealsController = async (
         res.status(200).json({
             message: 'Successfully fetched filtered Deals',
             data: response || [],
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const id:any = req.params.id;
+        const response = await getOneDeal(id);
+
+        res.status(200).json({
+            message: 'Successfully get Deal',
+            data: response,
         });
     } catch (error) {
         next(error);

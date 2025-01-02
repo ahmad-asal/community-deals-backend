@@ -41,3 +41,17 @@ export const filterDeals = async (filters: {
     }
 };
 
+export const getOneDeal = async(id: number) =>{
+    try {
+        const deals = await repo.getOne(id);
+
+        if (!deals) {
+            throw new CustomError('No deal found', 404);
+        }
+        return deals;
+    } catch (error) {
+        console.error('Error in deal:', error);
+        throw new CustomError('Failed to fetch deal', 500);
+    }
+}
+
