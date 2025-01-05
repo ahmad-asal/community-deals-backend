@@ -1,26 +1,16 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CategoryModel } from '@/database/models/category.model';
+import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 
-interface DealAttributes {
-    id: number;
-    title: string;
-    description: string;
-    categoryId: number;
-    expiryDate: Date | null;
-    status: 'In Review' | 'Approved' | 'rejected';
-}
+interface DealCreationAttributes extends Optional<Deal, 'id' | 'expiryDate'> {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface DealCreationAttributes
-    extends Optional<DealAttributes, 'id' | 'expiryDate'> {}
-
-export class DealModel extends Model<DealAttributes, DealCreationAttributes> {
+export class DealModel extends Model<Deal, DealCreationAttributes> {
     id!: number;
     title!: string;
     description!: string;
     categoryId!: number;
     expiryDate!: Date | null;
-    status!: 'In Review' | 'Approved' | 'Rejected';
+    status!: DealStatuses;
 }
 
 export default function (sequelize: Sequelize): typeof DealModel {
