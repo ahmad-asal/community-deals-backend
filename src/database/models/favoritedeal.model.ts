@@ -49,7 +49,7 @@ export default function (sequelize: Sequelize): typeof FavoriteDealsModel {
             updated_at: DataTypes.DATE,
         },
         {
-            tableName: 'user_role',
+            tableName: 'favorite_deal',
             sequelize,
             createdAt: 'created_at',
             updatedAt: 'updated_at',
