@@ -4,6 +4,8 @@ import userModel from './models/user.model';
 import categoryModel from './models/category.model';
 import roleModel from './models/role.model';
 import UserRoleModel from './models/userrole.model';
+import FavoriteDealsModel from './models/favoritedeal.model';
+
 import DealModel from './models/deal.model';
 
 import {
@@ -53,6 +55,7 @@ export const DB = {
     Categories: categoryModel(sequelize),
     Deals: DealModel(sequelize),
     DealImages: dealImageModel(sequelize),
+    FavoriteDeal: FavoriteDealsModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };

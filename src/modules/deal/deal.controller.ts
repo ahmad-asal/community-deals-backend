@@ -111,7 +111,6 @@ export const updateStatus = async (
 
         res.status(201).json({
             message: 'deal status successfully updated',
-            data: response,
         });
     } catch (error) {
         next(error);

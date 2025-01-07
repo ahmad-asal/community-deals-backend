@@ -1,16 +1,16 @@
-import { UserRole } from '@/interfaces/user.interfaces';
+import { FavoriteDeal } from '@/interfaces/user.interfaces';
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
-import { RoleModel } from './role.model';
 import { UserModel } from './user.model';
+import { DealModel } from './deal.model';
 
-type UserRoleCreationAttributes = Optional<UserRole, 'id'>;
-export class UserRoleModel
-    extends Model<UserRole, UserRoleCreationAttributes>
-    implements UserRole
+type favoriteDealCreationAttributes = Optional<FavoriteDeal, 'id'>;
+
+export class FavoriteDealsModel
+    extends Model<FavoriteDeal, favoriteDealCreationAttributes>
+    implements FavoriteDeal
 {
-    public id!: string;
     public userId!: number;
-    public roleId!: number;
+    public dealId!: number;
     public created_at: string | undefined;
     public updated_at: string | undefined;
 
@@ -18,8 +18,8 @@ export class UserRoleModel
     public readonly updatedAt!: Date;
 }
 
-export default function (sequelize: Sequelize): typeof UserRoleModel {
-    UserRoleModel.init(
+export default function (sequelize: Sequelize): typeof FavoriteDealsModel {
+    FavoriteDealsModel.init(
         {
             id: {
                 primaryKey: true,
@@ -30,18 +30,18 @@ export default function (sequelize: Sequelize): typeof UserRoleModel {
             userId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                unique: 'users_roles_unique_constraint',
+                unique: 'favorite_deals__unique_constraint',
                 references: {
                     model: 'user',
                     key: 'id',
                 },
             },
-            roleId: {
+            dealId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                unique: 'users_roles_unique_constraint',
+                unique: 'favorite_deals__unique_constraint',
                 references: {
-                    model: 'role',
+                    model: 'deals',
                     key: 'id',
                 },
             },
@@ -56,18 +56,18 @@ export default function (sequelize: Sequelize): typeof UserRoleModel {
             timestamps: true,
         },
     );
-    RoleModel.belongsToMany(UserModel, {
-        foreignKey: 'roleId',
+    DealModel.belongsToMany(UserModel, {
+        foreignKey: 'dealId',
         // otherKey: 'userId',
-        through: UserRoleModel,
+        through: FavoriteDealsModel,
         // as: 'users',
     });
-    UserModel.belongsToMany(RoleModel, {
+    UserModel.belongsToMany(DealModel, {
         foreignKey: 'userId',
-        // otherKey: 'roleId',
-        through: UserRoleModel,
-        as: 'roles',
+        // otherKey: 'dealId',
+        through: FavoriteDealsModel,
+        as: 'favoriteDeals',
     });
 
-    return UserRoleModel;
+    return FavoriteDealsModel;
 }
