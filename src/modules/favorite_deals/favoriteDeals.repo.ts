@@ -4,10 +4,17 @@ const repo = {
     setUserFavoriteDeal: async (
         userId: number,
         dealId: number,
+        intrest: boolean,
     ): Promise<void | null> => {
-        const [userRole, created] = await DB.FavoriteDeal.findOrCreate({
-            where: { userId, dealId },
-        });
+        if (intrest) {
+            await DB.FavoriteDeal.findOrCreate({
+                where: { userId, dealId },
+            });
+        } else {
+            await DB.FavoriteDeal.destroy({
+                where: { userId, dealId },
+            });
+        }
     },
 };
 

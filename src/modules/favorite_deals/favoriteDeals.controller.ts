@@ -12,21 +12,16 @@ export const updateIntrest = async (
     try {
         // const dealId = req.params.id as unknown as number;
         const { dealId, intrest } = req.body;
-        const { userId } = req.context;
+        const { context: { userId } = {} } = req;
 
         const dealExist = await dealRepo.dealExist(dealId);
         if (!dealExist) {
             throw new CustomError('deal not found', 404);
         }
-
         if (!(typeof intrest === 'boolean')) {
             throw new CustomError('intrest should be boolean', 409);
         }
-
-        const response = await favoriteDealsRepo.setUserFavoriteDeal(
-            userId,
-            dealId,
-        );
+        await favoriteDealsRepo.setUserFavoriteDeal(userId, dealId, intrest);
 
         res.status(201).json({
             message: 'deal status successfully updated',
