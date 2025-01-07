@@ -23,5 +23,6 @@ DealRouter.put(
     authorizeRole([rolesTypes.admin]),
     updateStatus,
 );
+DealRouter.post('/deal/:id/updateIntrest', authMiddleware, getOne);
 
 export default DealRouter;
