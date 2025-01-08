@@ -7,10 +7,10 @@ export interface Deal {
     status: DealStatuses;
 }
 
-export type DealStatuses = 'In Review' | 'Approved' | 'Rejected';
+export type DealStatuses = 'In Review' | 'Approved' | 'Rejected' | 'Deleted';
 
 export function isValidDealStatus(value: string): value is DealStatuses {
-    const ValidDealStatus: string[] = ['In Review', 'Approved', 'Rejected'];
+    const ValidDealStatus: string[] = ['In Review', 'Approved', 'Rejected', 'Deleted'];
 
     return ValidDealStatus.indexOf(value) !== -1;
 }
