@@ -42,7 +42,7 @@ export default function (sequelize: Sequelize): typeof DealModel {
                 allowNull: true,
             },
             status: {
-                type: DataTypes.ENUM('In Review', 'Approved', 'Rejected'),
+                type: DataTypes.ENUM('In Review', 'Approved', 'Rejected', 'Deleted'),
                 allowNull: false,
             },
         },
