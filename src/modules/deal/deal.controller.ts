@@ -15,7 +15,8 @@ export const DealsController = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const response = await getAllDeals();
+        const { context: { userId } = {} } = req;
+        const response = await getAllDeals(userId);
 
         res.status(200).json({
             message: 'Successfully get Deals',
@@ -107,7 +108,7 @@ export const updateStatus = async (
             throw new CustomError('not supported deal status', 409);
         }
 
-        const response = await dealRepo.updateStatus(dealId, status);
+        await dealRepo.updateStatus(dealId, status);
 
         res.status(201).json({
             message: 'deal status successfully updated',

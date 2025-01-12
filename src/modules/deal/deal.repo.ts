@@ -3,13 +3,30 @@ import { CategoryModel } from '@/database/models';
 import { DealModel } from '@/database/models/deal.model';
 import { DealImageModel } from '@/database/models/dealImage.model';
 import { DealStatuses } from '@/interfaces/deal.interface';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 
 const repo = {
-    getAll: async (): Promise<DealModel[] | null> => {
+    getAll: async (userId: number): Promise<DealModel[] | null> => {
         try {
             // Fetch all deals from the Deals table
             const deals = await DB.Deals.findAll({
+                attributes: {
+                    include: [
+                        [
+                            // Subquery to check if the deal is marked as interested by the user
+                            Sequelize.literal(`( 
+                            SELECT CASE WHEN EXISTS(
+                                SELECT COUNT(*)
+                                FROM "favorite_deal" AS ufd
+                                WHERE ufd."dealId" = "deals"."id" AND ufd."userId" = ${userId}
+                            ) THEN 'TRUE' ELSE 'FALSE' END
+                          
+                            )`),
+                            'isInterested',
+                        ],
+                    ],
+                },
+
                 include: [
                     {
                         model: DealImageModel,

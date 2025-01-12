@@ -9,8 +9,7 @@ interface DealImageAttributes {
     updatedAt?: Date;
 }
 
-interface DealImageCreationAttributes
-    extends Optional<DealImageAttributes, 'id'> {}
+type DealImageCreationAttributes = Optional<DealImageAttributes, 'id'>;
 
 export class DealImageModel extends Model<
     DealImageAttributes,

@@ -10,8 +10,8 @@ const repo = {
                 order: [
                     [Sequelize.literal('id = 0'), 'ASC'], // Treat id = 0 as the highest value
                     ['id', 'ASC'], // Order the rest by id ascending
-                  ],
-              });
+                ],
+            });
             return categories;
         } catch (error) {
             console.error('Error fetching categories:', error);

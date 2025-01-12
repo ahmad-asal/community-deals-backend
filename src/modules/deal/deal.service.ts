@@ -1,9 +1,9 @@
 import repo from './deal.repo';
 import { CustomError } from '@/utils/custom-error';
 
-export const getAllDeals = async () => {
+export const getAllDeals = async (userId: number) => {
     try {
-        const deals = await repo.getAll();
+        const deals = await repo.getAll(userId);
 
         if (!deals) {
             throw new CustomError('No deals found', 404);
@@ -41,7 +41,7 @@ export const filterDeals = async (filters: {
     }
 };
 
-export const getOneDeal = async(id: number) =>{
+export const getOneDeal = async (id: number) => {
     try {
         const deals = await repo.getOne(id);
 
@@ -53,5 +53,4 @@ export const getOneDeal = async(id: number) =>{
         console.error('Error in deal:', error);
         throw new CustomError('Failed to fetch deal', 500);
     }
-}
-
+};

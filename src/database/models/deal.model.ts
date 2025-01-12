@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CategoryModel } from '@/database/models/category.model';
 import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 
-interface DealCreationAttributes extends Optional<Deal, 'id' | 'expiryDate'> {}
+type DealCreationAttributes = Optional<Deal, 'id' | 'expiryDate'>;
 
 export class DealModel extends Model<Deal, DealCreationAttributes> {
     id!: number;
@@ -42,7 +42,12 @@ export default function (sequelize: Sequelize): typeof DealModel {
                 allowNull: true,
             },
             status: {
-                type: DataTypes.ENUM('In Review', 'Approved', 'Rejected', 'Deleted'),
+                type: DataTypes.ENUM(
+                    'In Review',
+                    'Approved',
+                    'Rejected',
+                    'Deleted',
+                ),
                 allowNull: false,
             },
         },

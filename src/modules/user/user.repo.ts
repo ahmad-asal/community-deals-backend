@@ -54,7 +54,7 @@ export const repo = {
         rolesList: rolesTypes[],
     ): Promise<void | null> => {
         for (const roleId of rolesList) {
-            const [userRole, created] = await DB.UserRole.findOrCreate({
+            await DB.UserRole.findOrCreate({
                 where: { userId, roleId },
             });
         }

@@ -58,15 +58,15 @@ export default function (sequelize: Sequelize): typeof FavoriteDealsModel {
     );
     DealModel.belongsToMany(UserModel, {
         foreignKey: 'dealId',
-        // otherKey: 'userId',
+        otherKey: 'userId',
         through: FavoriteDealsModel,
-        // as: 'users',
+        as: 'interestedUsers',
     });
     UserModel.belongsToMany(DealModel, {
         foreignKey: 'userId',
-        // otherKey: 'dealId',
+        otherKey: 'dealId',
         through: FavoriteDealsModel,
-        as: 'favoriteDeals',
+        // as: 'dealsInIntrest',
     });
 
     return FavoriteDealsModel;
