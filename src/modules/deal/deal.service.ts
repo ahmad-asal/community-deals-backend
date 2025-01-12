@@ -1,9 +1,9 @@
 import repo from './deal.repo';
 import { CustomError } from '@/utils/custom-error';
 
-export const getAllDeals = async (userId: number) => {
+export const getAllDeals = async (userId: number, intrestedInOnly: boolean) => {
     try {
-        const deals = await repo.getAll(userId);
+        const deals = await repo.getAll(userId, intrestedInOnly);
 
         if (!deals) {
             throw new CustomError('No deals found', 404);

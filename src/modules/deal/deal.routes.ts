@@ -13,7 +13,7 @@ import { rolesTypes } from '@/interfaces/user.interfaces';
 const DealRouter = express.Router();
 
 // Route to fetch all deals
-DealRouter.get('/', authMiddleware, DealsController);
+DealRouter.post('/all', authMiddleware, DealsController);
 DealRouter.post('/', authMiddleware, addOneController);
 DealRouter.get('/filter-deals', authMiddleware, filterDealsController);
 DealRouter.get('/deal/:id', authMiddleware, getOne);

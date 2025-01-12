@@ -15,8 +15,12 @@ export const DealsController = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { context: { userId } = {} } = req;
-        const response = await getAllDeals(userId);
+        const { context: { userId } = {}, body: { filters } = {} } = req;
+        let intrestedInOnly = false;
+        if (filters && filters.intrestedOnly) {
+            intrestedInOnly = true;
+        }
+        const response = await getAllDeals(userId, intrestedInOnly);
 
         res.status(200).json({
             message: 'Successfully get Deals',
