@@ -10,7 +10,6 @@ const repo = {
         intrestedInOnly: boolean,
     ): Promise<DealModel[] | null> => {
         try {
-            console.log({ intrestedInOnly });
             // Fetch all deals from the Deals table
             const deals = await DB.Deals.findAll({
                 attributes: {
@@ -37,10 +36,12 @@ const repo = {
                     },
                     {
                         model: DB.User,
-                        through: { attributes: [] }, // Join table
+                        attributes: [],
+                        through: { attributes: [] }, // Join table // where: { userId }
+
                         where: { id: userId || undefined }, // Filter for specific user if userId is provided
                         as: 'interestedUsers',
-                        // required: !!intrestedInOnly, // Only include deals that the user is interested in if userId exists
+                        required: intrestedInOnly, // Only include deals that the user is interested in if userId exists
                     },
                 ],
                 order: [['id', 'DESC']],
