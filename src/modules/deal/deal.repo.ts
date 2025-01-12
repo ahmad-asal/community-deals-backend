@@ -4,10 +4,13 @@ import { DealModel } from '@/database/models/deal.model';
 import { DealImageModel } from '@/database/models/dealImage.model';
 import { DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
-
 const repo = {
-    getAll: async (userId: number): Promise<DealModel[] | null> => {
+    getAll: async (
+        userId: number,
+        intrestedInOnly: boolean,
+    ): Promise<DealModel[] | null> => {
         try {
+            console.log({ intrestedInOnly });
             // Fetch all deals from the Deals table
             const deals = await DB.Deals.findAll({
                 attributes: {
@@ -16,7 +19,7 @@ const repo = {
                             // Subquery to check if the deal is marked as interested by the user
                             Sequelize.literal(`( 
                             SELECT CASE WHEN EXISTS(
-                                SELECT COUNT(*)
+                                SELECT *
                                 FROM "favorite_deal" AS ufd
                                 WHERE ufd."dealId" = "deals"."id" AND ufd."userId" = ${userId}
                             ) THEN 'TRUE' ELSE 'FALSE' END
@@ -31,6 +34,13 @@ const repo = {
                     {
                         model: DealImageModel,
                         as: 'images', // Match the alias in the association
+                    },
+                    {
+                        model: DB.User,
+                        through: { attributes: [] }, // Join table
+                        where: { id: userId || undefined }, // Filter for specific user if userId is provided
+                        as: 'interestedUsers',
+                        // required: !!intrestedInOnly, // Only include deals that the user is interested in if userId exists
                     },
                 ],
                 order: [['id', 'DESC']],
