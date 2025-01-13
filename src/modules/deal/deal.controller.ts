@@ -1,26 +1,37 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-    addOneDeal,
-    filterDeals,
-    getAllDeals,
-    getOneDeal,
-} from './deal.service';
+import dealService from './deal.service';
 import dealRepo from './deal.repo';
 import { CustomError } from '@/utils/custom-error';
 import { isValidDealStatus } from '@/interfaces/deal.interface';
+import { dealFilters } from './types';
 
-export const DealsController = async (
+export const getDeals = async (
     req: Request,
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { context: { userId } = {}, body: { filters } = {} } = req;
-        let intrestedInOnly = false;
-        if (filters && filters.intrestedOnly) {
-            intrestedInOnly = true;
-        }
-        const response = await getAllDeals(userId, intrestedInOnly);
+        const {
+            context: { userId } = {},
+            query: {
+                categoryId,
+                status,
+                searchQuery,
+                createdAt,
+                activity,
+                intrestedOnly = false,
+            },
+        } = req;
+        const filters: dealFilters = {
+            categoryId: categoryId ? Number(categoryId) : undefined,
+            status: status as 'In Review' | 'Approved' | 'Rejected' | undefined,
+            query: searchQuery as string | undefined,
+            createdAt: createdAt as string | undefined,
+            activity: activity as 'active' | 'expired' | undefined,
+            intrestedOnly: intrestedOnly as boolean,
+        };
+
+        const response = await dealService.getDeals(userId, filters);
 
         res.status(200).json({
             message: 'Successfully get Deals',
@@ -37,39 +48,11 @@ export const addOneController = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const response = await addOneDeal(req.body);
+        const response = await dealService.addOneDeal(req.body);
 
         res.status(201).json({
             message: 'deal successfully created',
             data: response,
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const filterDealsController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        // Extract filters from query parameters
-        const { categoryId, status, searchQuery, createdAt, activity } =
-            req.query;
-
-        // Pass filters to the service function
-        const response = await filterDeals({
-            categoryId: categoryId ? Number(categoryId) : undefined,
-            status: status as 'In Review' | 'Approved' | 'Rejected' | undefined,
-            query: searchQuery as string | undefined,
-            createdAt: createdAt as string | undefined,
-            activity: activity as 'active' | 'expired' | undefined,
-        });
-
-        res.status(200).json({
-            message: 'Successfully fetched filtered Deals',
-            data: response || [],
         });
     } catch (error) {
         next(error);
@@ -83,7 +66,7 @@ export const getOne = async (
 ): Promise<void> => {
     try {
         const id: any = req.params.id;
-        const response = await getOneDeal(id);
+        const response = await dealService.getOneDeal(id);
 
         res.status(200).json({
             message: 'Successfully get Deal',

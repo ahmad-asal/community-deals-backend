@@ -1,56 +1,42 @@
-import repo from './deal.repo';
+import dealRepo from './deal.repo';
 import { CustomError } from '@/utils/custom-error';
+import { dealFilters } from './types';
 
-export const getAllDeals = async (userId: number, intrestedInOnly: boolean) => {
-    try {
-        const deals = await repo.getAll(userId, intrestedInOnly);
+const dealService = {
+    getDeals: async (userId: number, filters: dealFilters) => {
+        try {
+            const deals = await dealRepo.getAll(userId, filters);
 
-        if (!deals) {
-            throw new CustomError('No deals found', 404);
+            if (!deals) {
+                throw new CustomError('No deals found', 404);
+            }
+            return deals;
+        } catch (error) {
+            console.error('Error in deals:', error);
+            throw new CustomError('Failed to fetch deals', 500);
         }
-        return deals;
-    } catch (error) {
-        console.error('Error in deals:', error);
-        throw new CustomError('Failed to fetch deals', 500);
-    }
-};
-
-export const addOneDeal = async (DealsData: any) => {
-    try {
-        const newDeal = await repo.addOne(DealsData);
-        return newDeal;
-    } catch (error) {
-        console.error('Error adding deal:', error);
-        throw new CustomError('Failed to add a deal', 500);
-    }
-};
-
-export const filterDeals = async (filters: {
-    categoryId?: number;
-    status?: 'In Review' | 'Approved' | 'Rejected';
-    query?: string;
-    createdAt?: string;
-    activity?: 'active' | 'expired';
-}) => {
-    try {
-        const filteredDeals = await repo.filterDeals(filters);
-        return filteredDeals;
-    } catch (error) {
-        console.error('Error filtering deals:', error);
-        throw new CustomError('Failed to filter deals', 500);
-    }
-};
-
-export const getOneDeal = async (id: number) => {
-    try {
-        const deals = await repo.getOne(id);
-
-        if (!deals) {
-            throw new CustomError('No deal found', 404);
+    },
+    addOneDeal: async (DealsData: any) => {
+        try {
+            const newDeal = await dealRepo.addOne(DealsData);
+            return newDeal;
+        } catch (error) {
+            console.error('Error adding deal:', error);
+            throw new CustomError('Failed to add a deal', 500);
         }
-        return deals;
-    } catch (error) {
-        console.error('Error in deal:', error);
-        throw new CustomError('Failed to fetch deal', 500);
-    }
+    },
+
+    getOneDeal: async (id: number) => {
+        try {
+            const deals = await dealRepo.getOne(id);
+            if (!deals) {
+                throw new CustomError('No deal found', 404);
+            }
+            return deals;
+        } catch (error) {
+            console.error('Error in deal:', error);
+            throw new CustomError('Failed to fetch deal', 500);
+        }
+    },
 };
+export default dealService;
