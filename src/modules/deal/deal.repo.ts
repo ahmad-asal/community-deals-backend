@@ -240,9 +240,25 @@ const repo = {
             throw error;
         }
     },
-    getOne: async (id: number): Promise<DealModel | null> => {
+    getOne: async (id: number, userId: number): Promise<DealModel | null> => {
         try {
             const deal = await DB.Deals.findOne({
+                attributes: {
+                    include: [
+                        [
+                            // Subquery to check if the deal is marked as interested by the user
+                            Sequelize.literal(`( 
+                            SELECT CASE WHEN EXISTS(
+                                SELECT *
+                                FROM "favorite_deal" AS ufd
+                                WHERE ufd."dealId" = "deals"."id" AND ufd."userId" = ${userId}
+                            ) THEN TRUE ELSE FALSE END
+                          
+                            )`),
+                            'isInterested',
+                        ],
+                    ],
+                },
                 where: { id }, // Filter by the provided id
                 include: [
                     {

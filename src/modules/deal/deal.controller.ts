@@ -59,14 +59,17 @@ export const addOneController = async (
     }
 };
 
-export const getOne = async (
+export const getDeal = async (
     req: Request,
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const id: any = req.params.id;
-        const response = await dealService.getOneDeal(id);
+        const {
+            context: { userId } = {},
+            params: { id },
+        } = req;
+        const response = await dealService.getOneDeal(Number(id), userId);
 
         res.status(200).json({
             message: 'Successfully get Deal',

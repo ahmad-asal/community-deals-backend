@@ -56,7 +56,7 @@ export const signInService = async (userData: User) => {
 
     const payload = {
         userId: user.id,
-        roles: user.roles!.map((role: Role) => role.id),
+        roles: user.roles?.map((role: Role) => role.id),
     };
     const accessToken = generateJWT(payload, JWT_ACCESS_TOKEN_SECRET as string);
 
