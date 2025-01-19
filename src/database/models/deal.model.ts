@@ -1,6 +1,7 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CategoryModel } from '@/database/models/category.model';
 import { Deal, DealStatuses } from '@/interfaces/deal.interface';
+import { UserModel } from '@/database/models/user.model';
 
 type DealCreationAttributes = Optional<Deal, 'id' | 'expiryDate'>;
 
@@ -29,11 +30,17 @@ export default function (sequelize: Sequelize): typeof DealModel {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-
             categoryId: {
                 type: DataTypes.INTEGER,
                 references: {
                     model: CategoryModel,
+                    key: 'id',
+                },
+            },
+            autherId: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: UserModel,
                     key: 'id',
                 },
             },

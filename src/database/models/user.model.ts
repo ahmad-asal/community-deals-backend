@@ -12,13 +12,19 @@ export class UserModel
     public name!: string;
     public username!: string;
     public password!: string;
+    public jobTitle!: string;
+    public companyName!: string;
+    public phoneNumber!: string;
+    public address!: string;
+    public profileImg!: string;
+    public status!: userStatus;
+    roles: rolesList | undefined;
+
     public created_at: string | undefined;
     public updated_at: string | undefined;
-    public status!: userStatus;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    roles: rolesList | undefined;
 }
 
 export default function (sequelize: Sequelize): typeof UserModel {
@@ -51,6 +57,26 @@ export default function (sequelize: Sequelize): typeof UserModel {
             status: {
                 allowNull: false,
                 type: DataTypes.ENUM('pending', 'active', 'suspended'),
+            },
+            jobTitle: {
+                allowNull: true,
+                type: DataTypes.STRING(255),
+            },
+            companyName: {
+                allowNull: true,
+                type: DataTypes.STRING(255),
+            },
+            phoneNumber: {
+                allowNull: true,
+                type: DataTypes.STRING(255),
+            },
+            address: {
+                allowNull: true,
+                type: DataTypes.STRING(255),
+            },
+            profileImg: {
+                allowNull: true,
+                type: DataTypes.STRING(255),
             },
             created_at: DataTypes.DATE,
             updated_at: DataTypes.DATE,

@@ -6,6 +6,11 @@ export interface User {
     name: string;
     username: string;
     password: string;
+    jobTitle: string;
+    companyName: string;
+    phoneNumber: string;
+    address: string;
+    profileImg: string;
     created_at: string | undefined;
     updated_at: string | undefined;
     status: userStatus;

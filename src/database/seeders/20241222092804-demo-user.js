@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    async up(queryInterface, Sequelize) {
+    async up(queryInterface) {
         /**
          * Add seed commands here.
          *
@@ -19,6 +19,12 @@ module.exports = {
                 name: 'user1',
                 email: 'user1@example.com',
                 password: '6t56h',
+                jobTitle: 'eng',
+                companyName: 'mena',
+                phoneNumber: '988-23125',
+                address: 'Nablus, tel',
+                profileImg: 'www.google.com',
+
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -27,6 +33,11 @@ module.exports = {
                 name: 'user2',
                 email: 'user2@example.com',
                 password: '6t56h',
+                jobTitle: 'eng',
+                companyName: 'mena',
+                phoneNumber: '988-23125',
+                address: 'Nablus, tel',
+                profileImg: 'www.google.com',
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -35,13 +46,18 @@ module.exports = {
                 name: 'user3',
                 email: 'user3@example.com',
                 password: '6t56h',
+                jobTitle: 'eng',
+                companyName: 'mena',
+                phoneNumber: '988-23125',
+                address: 'Nablus, tel',
+                profileImg: 'www.google.com',
                 created_at: new Date(),
                 updated_at: new Date(),
             },
         ]);
     },
 
-    async down(queryInterface, Sequelize) {
+    async down() {
         /**
          * Add commands to revert seed here.
          *

@@ -3,6 +3,7 @@ export interface Deal {
     title: string;
     description: string;
     categoryId: number;
+    autherId: number;
     expiryDate: Date | null;
     status: DealStatuses;
 }
