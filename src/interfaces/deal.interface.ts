@@ -1,11 +1,13 @@
 export interface Deal {
-    id: number;
+    id?: number;
     title: string;
     description: string;
     categoryId: number;
     autherId: number;
     expiryDate: Date | null;
     status: DealStatuses;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export type DealStatuses = 'In Review' | 'Approved' | 'Rejected' | 'Deleted';

@@ -2,7 +2,7 @@ import { DB } from '@/database';
 import { CategoryModel } from '@/database/models';
 import { DealModel } from '@/database/models/deal.model';
 import { DealImageModel } from '@/database/models/dealImage.model';
-import { DealStatuses } from '@/interfaces/deal.interface';
+import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
 import { dealFilters } from './types';
 const repo = {
@@ -119,14 +119,9 @@ const repo = {
             where: { title: title },
         });
     },
-    addOne: async (deals_data: {
-        title: string;
-        description: string;
-        categoryId: number;
-        status: 'In Review' | 'Approved' | 'Rejected';
-        imageUrls: string[]; // Array of image URLs to associate with the deal
-        expiryDate: Date | null;
-    }): Promise<DealModel | null> => {
+    addOne: async (
+        deals_data: Deal & { imageUrls?: string[] },
+    ): Promise<DealModel | null> => {
         try {
             // Create the deal
             const deal = await DB.Deals.create({
@@ -135,6 +130,7 @@ const repo = {
                 categoryId: deals_data.categoryId,
                 status: 'In Review',
                 expiryDate: deals_data.expiryDate,
+                autherId: deals_data.autherId,
             });
 
             // Create the associated image records

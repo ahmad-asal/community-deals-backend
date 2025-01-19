@@ -48,7 +48,11 @@ export const addOneController = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const response = await dealService.addOneDeal(req.body);
+        const { context: { userId } = {} } = req;
+        const response = await dealService.addOneDeal({
+            ...req.body,
+            autherId: userId,
+        });
 
         res.status(201).json({
             message: 'deal successfully created',
