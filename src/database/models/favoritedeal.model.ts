@@ -66,7 +66,6 @@ export default function (sequelize: Sequelize): typeof FavoriteDealsModel {
         foreignKey: 'userId',
         otherKey: 'dealId',
         through: FavoriteDealsModel,
-        // as: 'dealsInIntrest',
     });
 
     return FavoriteDealsModel;
