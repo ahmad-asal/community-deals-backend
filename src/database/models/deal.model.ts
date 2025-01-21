@@ -63,6 +63,9 @@ export default function (sequelize: Sequelize): typeof DealModel {
             modelName: 'deals',
         },
     );
-
+    UserModel.hasMany(DealModel, {
+        foreignKey: 'autherId',
+    });
+    DealModel.belongsTo(UserModel, { as: 'auther' });
     return DealModel;
 }

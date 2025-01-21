@@ -105,6 +105,13 @@ const repo = {
                         as: 'interestedUsers',
                         required: filters.intrestedOnly, // Only include deals that the user is interested in if userId exists
                     },
+                    {
+                        model: DB.User,
+                        as: 'auther',
+                        attributes: {
+                            exclude: ['password', 'created_at', 'updated_at'],
+                        },
+                    },
                 ],
                 order: [['id', 'DESC']],
             });
@@ -265,6 +272,13 @@ const repo = {
                         model: CategoryModel,
                         as: 'category',
                         attributes: ['category_name'],
+                    },
+                    {
+                        model: DB.User,
+                        as: 'auther',
+                        attributes: {
+                            exclude: ['password', 'created_at', 'updated_at'],
+                        },
                     },
                 ],
             });
