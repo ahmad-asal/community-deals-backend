@@ -5,6 +5,7 @@ import { DealImageModel } from '@/database/models/dealImage.model';
 import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
 import { dealFilters } from './types';
+import { omitAndPartial } from '@/utilities';
 const repo = {
     getAll: async (
         userId: number,
@@ -300,6 +301,20 @@ const repo = {
                 },
             },
         );
+    },
+    updateDeal: async (
+        dealId: number,
+        // payload: Partial<ModelAttributes<DealModel>>,
+        payload: omitAndPartial<
+            Deal,
+            'id' | 'created_at' | 'updated_at' | 'status' | 'autherId'
+        >,
+    ): Promise<void | null> => {
+        await DB.Deals.update(payload, {
+            where: {
+                id: dealId,
+            },
+        });
     },
 
     dealExist: async (dealId: number | undefined): Promise<boolean | null> => {

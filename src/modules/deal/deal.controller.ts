@@ -111,3 +111,32 @@ export const updateStatus = async (
         next(error);
     }
 };
+export const updateDeal = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const dealId = req.params.id as unknown as number;
+
+        const dealExist = await dealRepo.dealExist(dealId);
+        if (!dealExist) {
+            throw new CustomError('deal not found', 404);
+        }
+
+        const payload = (({ title, description, categoryId, expiryDate }) => ({
+            title,
+            description,
+            categoryId,
+            expiryDate,
+        }))(req.body);
+
+        await dealRepo.updateDeal(dealId, payload);
+
+        res.status(201).json({
+            message: 'deal data successfully updated',
+        });
+    } catch (error) {
+        next(error);
+    }
+};
