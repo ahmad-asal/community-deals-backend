@@ -1,4 +1,5 @@
 import { DB } from '@/database';
+import { UserModel } from '@/database/models/user.model';
 import {
     rolesList,
     rolesTypes,
@@ -31,6 +32,18 @@ export const repo = {
     userExist: async (userId: number | undefined): Promise<boolean | null> => {
         const user = await DB.User.findOne({ where: { id: userId } });
         return user !== null;
+    },
+
+    getOne: async (id: number): Promise<UserModel | null> => {
+        try {
+            const user = await DB.User.findOne({
+                where: { id }, // Filter by the provided id
+            });
+            return user;
+        } catch (error) {
+            console.error('Error fetching user by id:', error);
+            return null;
+        }
     },
 
     getUserRoles: async (userId: string | undefined): Promise<rolesList> => {

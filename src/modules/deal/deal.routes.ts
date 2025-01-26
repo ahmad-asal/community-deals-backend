@@ -24,7 +24,7 @@ DealRouter.put(
 DealRouter.put(
     '/:id',
     authMiddleware,
-    authorizeRole([rolesTypes.user]),
+    authorizeRole([rolesTypes.user, rolesTypes.admin]),
     updateDeal,
 );
 

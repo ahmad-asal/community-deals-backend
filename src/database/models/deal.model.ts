@@ -10,6 +10,7 @@ export class DealModel extends Model<Deal, DealCreationAttributes> {
     title!: string;
     description!: string;
     categoryId!: number;
+    autherId!: number;
     expiryDate!: Date | null;
     status!: DealStatuses;
 }
