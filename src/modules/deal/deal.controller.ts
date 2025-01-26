@@ -130,7 +130,7 @@ export const updateDeal = async (
         }
 
         if (
-            dealExist.autherId != userId ||
+            dealExist.autherId != userId &&
             !userRoles.includes(rolesTypes.admin)
         ) {
             throw new CustomError(

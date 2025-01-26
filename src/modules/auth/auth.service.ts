@@ -1,14 +1,14 @@
-import { Role, User } from '@/interfaces/user.interfaces';
+import { Role, rolesTypes, User } from '@/interfaces/user.interfaces';
 import { validateSignIn, validateSignUp } from './auth.validator';
 import repo from './auth.repo';
+import userRoleRepo from '../user_roles/user_roles.repo';
+
 import { compareSync, hash } from 'bcrypt';
 import { generateJWT } from '@/middlewares/jwt.service';
 import { JWT_ACCESS_TOKEN_SECRET } from '@/config';
 import { CustomError } from '@/utils/custom-error';
 
-export const signUpService = async (
-    userData: User,
-): Promise<{ user: User }> => {
+export const signUpService = async (userData: User): Promise<void> => {
     const { error } = validateSignUp(userData);
     if (error) {
         throw new CustomError(error.details[0].message, 400);
@@ -30,8 +30,9 @@ export const signUpService = async (
         password: hashedPassword,
         status: 'pending',
     });
-
-    return { user: newUserData };
+    if (newUserData) {
+        await userRoleRepo.create(parseInt(newUserData.id!), rolesTypes.user);
+    }
 };
 
 export const signInService = async (userData: User) => {
