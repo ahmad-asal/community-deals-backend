@@ -5,6 +5,7 @@ import { DealImageModel } from '@/database/models/dealImage.model';
 import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
 import { dealFilters } from './types';
+import { omitAndPartial } from '@/utilities';
 const repo = {
     getAll: async (
         userId: number,
@@ -243,7 +244,22 @@ const repo = {
             throw error;
         }
     },
-    getOne: async (id: number, userId: number): Promise<DealModel | null> => {
+    getOne: async (id: number): Promise<DealModel | null> => {
+        try {
+            const deal = await DB.Deals.findOne({
+                where: { id }, // Filter by the provided id
+            });
+            return deal;
+        } catch (error) {
+            console.error('Error fetching deal by id:', error);
+            return null;
+        }
+    },
+
+    getOnePopulated: async (
+        id: number,
+        userId: number,
+    ): Promise<DealModel | null> => {
         try {
             const deal = await DB.Deals.findOne({
                 attributes: {
@@ -300,6 +316,39 @@ const repo = {
                 },
             },
         );
+    },
+    updateDeal: async (
+        dealId: number,
+        // payload: Partial<ModelAttributes<DealModel>>,
+        {
+            images,
+            ...payload
+        }: omitAndPartial<
+            Deal & { images?: object[] },
+            'id' | 'created_at' | 'updated_at' | 'status' | 'autherId'
+        >,
+    ): Promise<void | null> => {
+        await DB.Deals.update(payload, {
+            where: {
+                id: dealId,
+            },
+        });
+
+        if (images?.length) {
+            const imagePromises = images.map(({ imageUrl, status }: any) => {
+                if (status === 'added') {
+                    DB.DealImages.create({
+                        dealId,
+                        imageUrl,
+                    });
+                } else if (status === 'deleted') {
+                    DB.DealImages.destroy({
+                        where: { imageUrl, dealId },
+                    });
+                }
+            });
+            await Promise.all(imagePromises); // Wait for all image records to be created
+        }
     },
 
     dealExist: async (dealId: number | undefined): Promise<boolean | null> => {

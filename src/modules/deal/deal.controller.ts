@@ -4,6 +4,7 @@ import dealRepo from './deal.repo';
 import { CustomError } from '@/utils/custom-error';
 import { isValidDealStatus } from '@/interfaces/deal.interface';
 import { dealFilters } from './types';
+import { rolesTypes } from '@/interfaces/user.interfaces';
 
 export const getDeals = async (
     req: Request,
@@ -106,6 +107,56 @@ export const updateStatus = async (
 
         res.status(201).json({
             message: 'deal status successfully updated',
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+export const updateDeal = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const {
+            params: { id: dealId },
+            context: { userId, roles: userRoles } = {},
+        } = req;
+
+        const dealExist = await dealRepo.getOne(parseInt(dealId));
+
+        if (!dealExist) {
+            throw new CustomError('deal not found', 404);
+        }
+
+        if (
+            dealExist.autherId != userId ||
+            !userRoles.includes(rolesTypes.admin)
+        ) {
+            throw new CustomError(
+                'You need to have an admin role or to be the auther of the deal',
+                403,
+            );
+        }
+
+        const payload = (({
+            title,
+            description,
+            categoryId,
+            expiryDate,
+            images,
+        }) => ({
+            title,
+            description,
+            categoryId,
+            expiryDate,
+            images,
+        }))(req.body);
+
+        await dealRepo.updateDeal(parseInt(dealId), payload);
+
+        res.status(201).json({
+            message: 'deal data successfully updated',
         });
     } catch (error) {
         next(error);

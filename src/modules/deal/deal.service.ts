@@ -28,7 +28,7 @@ const dealService = {
 
     getOneDeal: async (id: number, userId: number) => {
         try {
-            const deals = await dealRepo.getOne(id, userId);
+            const deals = await dealRepo.getOnePopulated(id, userId);
             if (!deals) {
                 throw new CustomError('No deal found', 404);
             }
