@@ -6,6 +6,7 @@ import { DB } from '@database/index';
 import { PORT } from './config';
 import { errorHandler } from './utils/error-handler';
 import { swaggerSpec, swaggerUi } from './utils/swagger';
+import path from 'path';
 
 const appServer = express();
 const port = PORT;
@@ -46,11 +47,25 @@ appServer.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Use the router with the /api prefix
 appServer.use('/api', router);
+
+// Serve frontend
+if (process.env.NODE_ENV === 'production') {
+    appServer.use(express.static(path.join(__dirname, '../frontend/build')));
+
+    appServer.get('*', (req, res) =>
+        res.sendFile(
+            path.resolve(__dirname, '../', 'frontend', 'build', 'index.html'),
+        ),
+    );
+} else {
+    appServer.get('/', (req, res) => res.send('Please set to production'));
+}
+
 appServer.use(errorHandler);
 
-appServer.all('*', (req, res) => {
-    res.status(404).json({ message: 'Sorry! Page not found' });
-});
+// appServer.all('*', (req, res) => {
+//     res.status(404).json({ message: 'Sorry! Page not found' });
+// });
 
 DB.sequelize
     .authenticate()
