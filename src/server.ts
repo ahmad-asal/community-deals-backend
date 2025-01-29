@@ -50,11 +50,11 @@ appServer.use('/api', router);
 
 // Serve frontend
 if (process.env.NODE_ENV === 'production') {
-    appServer.use(express.static(path.join(__dirname, '../frontend/build')));
+    appServer.use(express.static(path.join(__dirname, '../../fe_build')));
 
     appServer.get('*', (req, res) =>
         res.sendFile(
-            path.resolve(__dirname, '../', 'frontend', 'build', 'index.html'),
+            path.resolve(__dirname, '../../', 'fe_build', 'index.html'),
         ),
     );
 } else {

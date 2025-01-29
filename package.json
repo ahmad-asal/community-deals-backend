@@ -7,6 +7,7 @@
     "scripts": {
         "start": "ts-node -r tsconfig-paths/register --transpile-only src/server.ts",
         "dev": "nodemon",
+        "production":"export NODE_ENV=test || SET \"NODE_ENV=test\" && nodemon",
         "lint": "eslint --ignore-path .gitignore --ext .ts src/",
         "lint:fix": "npm run lint -- --fix",
         "migration:generate": "sequelize migration:generate --name",
