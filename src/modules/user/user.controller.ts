@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as userService from './user.service';
+import dealsService from '../deal/deal.service';
 import { repo as userRepo } from './user.repo';
 import { repo as roleRepo } from '../role/role.repo';
 
@@ -115,6 +116,31 @@ export const updateRoles = async (
         return res
             .status(200)
             .json({ message: 'User roles updateted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getUserDeals = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const authorization = req.headers.authorization;
+        if (!authorization) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        const userId = Number(req.params.id);
+
+        const response = await dealsService.getUserDeals(userId);
+
+        res.status(200).json({
+            message: 'Successfully get Deals',
+            data: response,
+        });
     } catch (error) {
         next(error);
     }
