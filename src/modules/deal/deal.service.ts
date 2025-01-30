@@ -38,5 +38,18 @@ const dealService = {
             throw new CustomError('Failed to fetch deal', 500);
         }
     },
+
+    getUserDeals: async (userId: number) => {
+        try {
+            const deals = await dealRepo.findUserDeals(userId);
+            if (!deals) {
+                throw new CustomError('No deals found', 404);
+            }
+            return deals;
+        } catch (error) {
+            console.error('Error in deal:', error);
+            throw new CustomError('Failed to fetch deal', 500);
+        }
+    },
 };
 export default dealService;

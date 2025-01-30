@@ -355,6 +355,14 @@ const repo = {
         const deal = await DB.Deals.findOne({ where: { id: dealId } });
         return deal !== null;
     },
+
+    findUserDeals: async (userId: number): Promise<DealModel[] | null> => {
+        const deals: DealModel[] = await DB.Deals.findAll({
+            where: { autherId: userId },
+        });
+
+        return deals;
+    },
 };
 
 export default repo;
