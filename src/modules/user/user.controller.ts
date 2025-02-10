@@ -5,7 +5,7 @@ import { repo as userRepo } from './user.repo';
 import { repo as roleRepo } from '../role/role.repo';
 
 import { CustomError } from '@/utils/custom-error';
-import { userStatus } from '@/interfaces/user.interfaces';
+import { rolesTypes, userStatus } from '@/interfaces/user.interfaces';
 
 export const getUserProfileController = async (
     req: Request,
@@ -140,6 +140,57 @@ export const getUserDeals = async (
         res.status(200).json({
             message: 'Successfully get Deals',
             data: response,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateUserData = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const {
+            params: { id },
+            context: { roles: userRoles } = {},
+        } = req;
+        const userId = parseInt(id); // Extract `id` from route params and convert to number
+
+        const userExist = await userRepo.getOne(userId);
+
+        if (!userExist) {
+            throw new CustomError('user not found', 404);
+        }
+
+        if (userExist.id != id && !userRoles.includes(rolesTypes.admin)) {
+            throw new CustomError(
+                'You need to have an admin role or to be the same user',
+                403,
+            );
+        }
+
+        const payload = (({
+            address,
+            companyName,
+            jobTitle,
+            name,
+            phoneNumber,
+            profileImg,
+        }) => ({
+            address,
+            companyName,
+            jobTitle,
+            name,
+            phoneNumber,
+            profileImg,
+        }))(req.body);
+
+        await userRepo.updateUserData(parseInt(id), payload);
+
+        res.status(201).json({
+            message: 'user data successfully updated',
         });
     } catch (error) {
         next(error);

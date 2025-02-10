@@ -93,4 +93,21 @@ export const repo = {
             })) || {};
         return status;
     },
+    updateUserData: async (
+        userId: number,
+        payload: {
+            address: string;
+            companyName: string;
+            jobTitle: string;
+            name: string;
+            phoneNumber: string;
+            profileImg: string;
+        },
+    ): Promise<void | null> => {
+        await DB.User.update(payload, {
+            where: {
+                id: userId,
+            },
+        });
+    },
 };
