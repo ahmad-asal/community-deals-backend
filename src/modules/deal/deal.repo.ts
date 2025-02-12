@@ -120,7 +120,12 @@ const repo = {
                             {
                                 model: DB.User,
                                 as: 'author',
-                                attributes: ['id', 'username', 'email'],
+                                attributes: [
+                                    'id',
+                                    'name',
+                                    'email',
+                                    'profileImg',
+                                ],
                             },
                         ],
                     },
@@ -314,7 +319,12 @@ const repo = {
                             {
                                 model: DB.User,
                                 as: 'author',
-                                attributes: ['id', 'username', 'email'],
+                                attributes: [
+                                    'id',
+                                    'name',
+                                    'email',
+                                    'profileImg',
+                                ],
                             },
                         ],
                     },
