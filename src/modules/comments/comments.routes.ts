@@ -3,7 +3,7 @@ import { addComment, getCommentsByDeal } from './comments.controller';
 
 const commentsRouter = express.Router();
 
-commentsRouter.post('/', addComment); // Add a comment
-commentsRouter.get('/:dealId', getCommentsByDeal); // Get all comments for a deal
+commentsRouter.post('/', addComment);
+commentsRouter.get('/:dealId', getCommentsByDeal);
 
 export default commentsRouter;

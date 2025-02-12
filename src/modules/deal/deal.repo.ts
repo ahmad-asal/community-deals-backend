@@ -113,6 +113,17 @@ const repo = {
                             exclude: ['password', 'created_at', 'updated_at'],
                         },
                     },
+                    {
+                        model: DB.Comments,
+                        as: 'comments',
+                        include: [
+                            {
+                                model: DB.User,
+                                as: 'author',
+                                attributes: ['id', 'username', 'email'],
+                            },
+                        ],
+                    },
                 ],
                 order: [['id', 'DESC']],
             });
@@ -295,6 +306,17 @@ const repo = {
                         attributes: {
                             exclude: ['password', 'created_at', 'updated_at'],
                         },
+                    },
+                    {
+                        model: DB.Comments,
+                        as: 'comments',
+                        include: [
+                            {
+                                model: DB.User,
+                                as: 'author',
+                                attributes: ['id', 'username', 'email'],
+                            },
+                        ],
                     },
                 ],
             });
