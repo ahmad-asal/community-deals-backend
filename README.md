@@ -80,10 +80,7 @@ npm start
 - run `npm install`
 - run `npm run migration`
 - run `npm run seed:all`
-- In `auth.service.signUpService` change `status` to `active` and `role` to `admin`
-- run be and fe and create an account through signup.
-- revert the role change in signupService and create another user that is a normal user
-- roll back the changes done in the code and happy coding!
+- data related to users exists in the seeders file
 ---
 
 ## 🛠 Additional
