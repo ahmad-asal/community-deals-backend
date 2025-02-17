@@ -16,9 +16,9 @@ module.exports = {
         const hashedPassword = await hash('6t56hAb8cs', 10);
         return queryInterface.bulkInsert('user', [
             {
-                username: 'user111',
+                username: 'user1',
                 name: 'user1',
-                email: 'user111@example.com',
+                email: 'user1@example.com',
                 password: hashedPassword,
                 jobTitle: 'eng',
                 companyName: 'mena',
@@ -30,9 +30,9 @@ module.exports = {
                 updated_at: new Date(),
             },
             {
-                username: 'user211',
+                username: 'user2',
                 name: 'user2',
-                email: 'user211@example.com',
+                email: 'user2@example.com',
                 password: hashedPassword,
                 jobTitle: 'eng',
                 companyName: 'mena',
@@ -44,9 +44,9 @@ module.exports = {
                 updated_at: new Date(),
             },
             {
-                username: 'user311',
+                username: 'user3',
                 name: 'user3',
-                email: 'user311@example.com',
+                email: 'user3@example.com',
                 password: hashedPassword,
                 jobTitle: 'eng',
                 companyName: 'mena',
