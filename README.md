@@ -75,6 +75,14 @@ npm start
 
 ---
 
+## Setting up db
+
+- run `npm install`
+- run `npm run migration`
+- run `npm run seed:all`
+- data related to users exists in the seeders file
+---
+
 ## 🛠 Additional
 
 - **Linting and code formatting:**
@@ -147,4 +155,3 @@ Response:
 
 ---
 
- 
