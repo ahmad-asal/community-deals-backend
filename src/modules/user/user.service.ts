@@ -20,18 +20,6 @@ export const getUserProfileService = async (accessToken: string, id?: any) => {
 
     return user;
 };
-export const getAllUsers = async (accessToken: string): Promise<User[]> => {
-    const decodeToken = await verifyJWT(
-        accessToken,
-        JWT_ACCESS_TOKEN_SECRET as string,
-    );
-
-    const userId = decodeToken.userId;
-
-    const users = await repo.getAllUsers();
-    // if (!Array.isArray(users)) {
-    //     throw new CustomError('User not found', 404);
-    // }
-
-    return users;
+export const getAllUsers = async (): Promise<User[]> => {
+    return await repo.getAllUsers();
 };

@@ -5,7 +5,11 @@ import { repo as userRepo } from './user.repo';
 import { repo as roleRepo } from '../role/role.repo';
 
 import { CustomError } from '@/utils/custom-error';
-import { rolesTypes, userStatus } from '@/interfaces/user.interfaces';
+import {
+    possibleUserStatuses,
+    rolesTypes,
+    userStatus,
+} from '@/interfaces/user.interfaces';
 
 export const getUserProfileController = async (
     req: Request,
@@ -38,16 +42,38 @@ export const getAll = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const authorization = req.headers.authorization;
-        if (!authorization) {
-            res.status(404).json({ message: 'User not found' });
-            return;
+        const response = await userService.getAllUsers();
+        res.status(200).json({ message: 'User data fetched', data: response });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getUsersByStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const users = await userService.getAllUsers();
+
+        const {
+            query: { status },
+        } = req;
+
+        let filterStatus: any = possibleUserStatuses;
+        if (status) {
+            filterStatus = status;
         }
 
-        const accessToken = authorization.split(' ')[1];
-        const response = await userService.getAllUsers(accessToken);
+        const matchingUsers = users.filter(user =>
+            filterStatus.includes(user.status),
+        );
 
-        res.status(200).json({ message: 'User data fetched', data: response });
+        res.status(200).json({
+            message: 'users were fetched',
+            data: matchingUsers,
+        });
     } catch (error) {
         next(error);
     }
@@ -59,11 +85,6 @@ export const updateStatus = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const authorization = req.headers.authorization;
-        if (!authorization) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
         const userId = parseInt(req.params.id);
         const userExist = await userRepo.userExist(userId);
         if (!userExist) {
@@ -85,12 +106,6 @@ export const updateRoles = async (
     next: NextFunction,
 ) => {
     try {
-        const authorization = req.headers.authorization;
-        if (!authorization) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-
         const userId = parseInt(req.params.id);
         const userExist = await userRepo.userExist(userId);
         if (!userExist) {
@@ -127,12 +142,6 @@ export const getUserDeals = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const authorization = req.headers.authorization;
-        if (!authorization) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-
         const userId = Number(req.params.id);
 
         const response = await dealsService.getUserDeals(userId);
