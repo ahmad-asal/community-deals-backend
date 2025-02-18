@@ -38,7 +38,7 @@ userRouter.put(
 userRouter.get(
     '/usersByStatus',
     authMiddleware,
-    // authorizeRole([rolesTypes.user, rolesTypes.admin]),
+    authorizeRole([rolesTypes.user, rolesTypes.admin]),
     getUsersByStatus,
 );
 
