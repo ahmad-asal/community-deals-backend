@@ -38,3 +38,35 @@ export const getCommentsByDeal = async (
         next(error);
     }
 };
+
+export const updateComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { commentId } = req.params;
+        const { userId, content } = req.body;
+
+        if (!content.trim()) {
+            return res.status(400).json({ error: 'Comment cannot be empty' });
+        }
+
+        const updatedComment = await commentService.updateComment(
+            Number(commentId),
+            Number(userId),
+            content,
+        );
+
+        if (!updatedComment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        return res.status(200).json({
+            message: 'Comment updated successfully',
+            updatedComment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

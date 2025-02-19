@@ -25,6 +25,26 @@ const commentService = {
     getCommentsByDeal: async (dealId: number) => {
         return await commentRepo.findCommentsByDeal(dealId);
     },
+
+    updateComment: async (
+        commentId: number,
+        userId: number,
+        content: string,
+    ) => {
+        if (!commentId || !content) {
+            throw new CustomError('Comment ID and content are required.', 400);
+        }
+        const existingComment = await commentRepo.findCommentById(commentId);
+        if (!existingComment) {
+            throw new CustomError('Comment not found.', 404);
+        }
+
+        if (existingComment.userId !== userId) {
+            throw new CustomError('Unauthorized to edit this comment.', 403);
+        }
+
+        return await commentRepo.updateComment(commentId, content);
+    },
 };
 
 export default commentService;

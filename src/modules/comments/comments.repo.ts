@@ -27,6 +27,23 @@ const commentRepo = {
             order: [['createdAt', 'DESC']],
         });
     },
+    findCommentById: async (commentId: number) => {
+        return await DB.Comments.findOne({
+            where: { id: commentId },
+        });
+    },
+    updateComment: async (commentId: number, content: string) => {
+        const [affectedRows] = await DB.Comments.update(
+            { content },
+            { where: { id: commentId } },
+        );
+
+        if (affectedRows === 0) {
+            return null;
+        }
+
+        return await DB.Comments.findOne({ where: { id: commentId } });
+    },
 };
 
 export default commentRepo;
