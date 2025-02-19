@@ -18,6 +18,7 @@ import {
     NODE_ENV,
 } from '@/config';
 import dealImageModel from './models/dealImage.model';
+import commentsModel from './models/comments.model';
 
 export const sequelize = new Sequelize.Sequelize(
     DB_NAME as string,
@@ -56,6 +57,7 @@ export const DB = {
     Deals: DealModel(sequelize),
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
+    Comments: commentsModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };
