@@ -44,6 +44,11 @@ const commentRepo = {
 
         return await DB.Comments.findOne({ where: { id: commentId } });
     },
+    deleteComment: async (commentId: number) => {
+        return await DB.Comments.destroy({
+            where: { id: commentId },
+        });
+    },
 };
 
 export default commentRepo;

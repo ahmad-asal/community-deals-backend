@@ -45,6 +45,20 @@ const commentService = {
 
         return await commentRepo.updateComment(commentId, content);
     },
+    deleteComment: async (commentId: number, userId: number) => {
+        // Check if the comment exists
+        const comment = await commentRepo.findCommentById(commentId);
+        if (!comment) {
+            throw new CustomError('Comment not found', 404);
+        }
+
+        // Ensure the user owns the comment before deleting
+        if (comment.userId !== userId) {
+            throw new CustomError('Unauthorized to delete this comment', 403);
+        }
+
+        return await commentRepo.deleteComment(commentId);
+    },
 };
 
 export default commentService;

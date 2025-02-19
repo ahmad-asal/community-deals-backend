@@ -70,3 +70,35 @@ export const updateComment = async (
         next(error);
     }
 };
+
+export const deleteComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { commentId } = req.params;
+        const { userId } = req.body;
+
+        if (!commentId || !userId) {
+            return res
+                .status(400)
+                .json({ message: 'Comment ID and user ID are required.' });
+        }
+
+        const deleted = await commentService.deleteComment(
+            Number(commentId),
+            Number(userId),
+        );
+
+        if (!deleted) {
+            return res
+                .status(404)
+                .json({ message: 'Comment not found or unauthorized.' });
+        }
+
+        res.status(200).json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
