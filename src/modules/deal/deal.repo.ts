@@ -22,9 +22,14 @@ const repo = {
             ];
         }
 
-        // Filter by category
+        // Filter by author
         if (filters.categoryId) {
             whereConditions.categoryId = filters.categoryId;
+        }
+
+        // Filter by category
+        if (filters.authorId) {
+            whereConditions.autherId = filters.authorId;
         }
 
         // Filter by created date range
