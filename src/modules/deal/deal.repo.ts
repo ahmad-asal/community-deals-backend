@@ -22,12 +22,12 @@ const repo = {
             ];
         }
 
-        // Filter by author
+        // Filter by category
         if (filters.categoryId) {
             whereConditions.categoryId = filters.categoryId;
         }
 
-        // Filter by category
+        // Filter by user
         if (filters.authorId) {
             whereConditions.autherId = filters.authorId;
         }
