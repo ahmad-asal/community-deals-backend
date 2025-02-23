@@ -78,7 +78,7 @@ export const deleteComment = async (
 ) => {
     try {
         const { commentId } = req.params;
-        const { userId } = req.body;
+        const { userId } = req.query;
 
         if (!commentId || !userId) {
             return res
