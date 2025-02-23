@@ -5,4 +5,5 @@ export type dealFilters = {
     createdAt?: string;
     activity?: 'active' | 'expired';
     intrestedOnly?: boolean;
+    authorId?: number;
 };

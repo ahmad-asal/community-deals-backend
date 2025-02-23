@@ -27,6 +27,11 @@ const repo = {
             whereConditions.categoryId = filters.categoryId;
         }
 
+        // Filter by user
+        if (filters.authorId) {
+            whereConditions.autherId = filters.authorId;
+        }
+
         // Filter by created date range
         if (filters.createdAt) {
             const dateRanges: any = {
