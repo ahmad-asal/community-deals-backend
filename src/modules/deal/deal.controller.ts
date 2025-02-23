@@ -21,8 +21,10 @@ export const getDeals = async (
                 createdAt,
                 activity,
                 intrestedOnly = false,
+                authorId,
             },
         } = req;
+
         const filters: dealFilters = {
             categoryId: categoryId ? Number(categoryId) : undefined,
             status: status as 'In Review' | 'Approved' | 'Rejected' | undefined,
@@ -30,6 +32,7 @@ export const getDeals = async (
             createdAt: createdAt as string | undefined,
             activity: activity as 'active' | 'expired' | undefined,
             intrestedOnly: intrestedOnly as boolean,
+            authorId: authorId ? Number(authorId) : undefined,
         };
 
         const response = await dealService.getDeals(userId, filters);
