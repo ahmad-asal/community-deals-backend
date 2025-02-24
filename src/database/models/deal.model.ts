@@ -1,9 +1,9 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CategoryModel } from '@/database/models/category.model';
-import { Deal, DealStatuses } from '@/interfaces/deal.interface';
+import { Deal, DealStatuses, DealTypes } from '@/interfaces/deal.interface';
 import { UserModel } from '@/database/models/user.model';
 
-type DealCreationAttributes = Optional<Deal, 'id' | 'expiryDate'>;
+type DealCreationAttributes = Optional<Deal, 'id' | 'expiryDate' | 'type'>;
 
 export class DealModel extends Model<Deal, DealCreationAttributes> {
     id!: number;
@@ -13,6 +13,7 @@ export class DealModel extends Model<Deal, DealCreationAttributes> {
     autherId!: number;
     expiryDate!: Date | null;
     status!: DealStatuses;
+    type!: DealTypes;
 }
 
 export default function (sequelize: Sequelize): typeof DealModel {
@@ -57,6 +58,11 @@ export default function (sequelize: Sequelize): typeof DealModel {
                     'Deleted',
                 ),
                 allowNull: false,
+            },
+            type: {
+                type: DataTypes.ENUM('I Want to', 'I Need to', 'Other'),
+                allowNull: false,
+                defaultValue: 'Other',
             },
         },
         {
