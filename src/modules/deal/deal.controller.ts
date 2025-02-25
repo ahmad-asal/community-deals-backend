@@ -148,12 +148,14 @@ export const updateDeal = async (
             categoryId,
             expiryDate,
             images,
+            type,
         }) => ({
             title,
             description,
             categoryId,
             expiryDate,
             images,
+            type,
         }))(req.body);
 
         await dealRepo.updateDeal(parseInt(dealId), payload);

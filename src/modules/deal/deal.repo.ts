@@ -144,6 +144,7 @@ const repo = {
                 status: 'In Review',
                 expiryDate: deals_data.expiryDate,
                 autherId: deals_data.autherId,
+                type: deals_data.type,
             });
 
             // Create the associated image records
