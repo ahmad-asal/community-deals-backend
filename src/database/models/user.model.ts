@@ -56,7 +56,12 @@ export default function (sequelize: Sequelize): typeof UserModel {
             },
             status: {
                 allowNull: false,
-                type: DataTypes.ENUM('pending', 'active', 'suspended'),
+                type: DataTypes.ENUM(
+                    'pending',
+                    'active',
+                    'suspended',
+                    'deleted',
+                ),
             },
             jobTitle: {
                 allowNull: true,

@@ -73,7 +73,7 @@ export const updateStatus = async (
             await userRepo.updateStatus(userId, status);
         }
 
-        res.status(200).json({ message: 'User updateted successfully' });
+        res.status(200).json({ message: 'User status updated successfully' });
     } catch (error) {
         next(error);
     }
