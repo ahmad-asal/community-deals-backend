@@ -2,7 +2,6 @@ import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { DealModel } from './deal.model';
 import { UserModel } from './user.model';
 
-// Define interface for Comment
 export interface Comment {
     id: number;
     userId: number;
@@ -10,17 +9,16 @@ export interface Comment {
     content: string;
 }
 
-// Define creation attributes (optional 'id' for creation)
 type commentCreationAttributes = Optional<Comment, 'id'>;
 
 export class CommentModel
     extends Model<Comment, commentCreationAttributes>
     implements Comment
 {
-    public id!: number; // Required by the Comment interface
-    public userId!: number; // Required by the Comment interface
-    public dealId!: number; // Required by the Comment interface
-    public content!: string; // Required by the Comment interface
+    public id!: number;
+    public userId!: number;
+    public dealId!: number;
+    public content!: string;
 }
 
 export default function (sequelize: Sequelize): typeof CommentModel {
@@ -36,7 +34,7 @@ export default function (sequelize: Sequelize): typeof CommentModel {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'users', // Ensure table name is correct
+                    model: 'user',
                     key: 'id',
                 },
             },
@@ -44,7 +42,7 @@ export default function (sequelize: Sequelize): typeof CommentModel {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'deals', // Ensure table name is correct
+                    model: 'deals',
                     key: 'id',
                 },
             },
@@ -68,6 +66,10 @@ export default function (sequelize: Sequelize): typeof CommentModel {
     CommentModel.belongsTo(DealModel, {
         foreignKey: 'dealId',
         as: 'deal',
+    });
+    DealModel.hasMany(CommentModel, {
+        foreignKey: 'dealId',
+        as: 'comments',
     });
 
     return CommentModel;
