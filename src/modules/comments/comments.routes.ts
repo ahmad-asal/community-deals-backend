@@ -1,9 +1,16 @@
 import express from 'express';
-import { addComment, getCommentsByDeal } from './comments.controller';
+import {
+    addComment,
+    deleteComment,
+    getCommentsByDeal,
+    updateComment,
+} from './comments.controller';
 
 const commentsRouter = express.Router();
 
-commentsRouter.post('/', addComment); // Add a comment
-commentsRouter.get('/:dealId', getCommentsByDeal); // Get all comments for a deal
+commentsRouter.post('/', addComment);
+commentsRouter.get('/:dealId', getCommentsByDeal);
+commentsRouter.put('/:commentId', updateComment);
+commentsRouter.delete('/:commentId', deleteComment);
 
 export default commentsRouter;
