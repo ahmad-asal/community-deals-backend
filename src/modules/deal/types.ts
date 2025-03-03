@@ -6,4 +6,5 @@ export type dealFilters = {
     activity?: 'active' | 'expired';
     intrestedOnly?: boolean;
     authorId?: number;
+    type?: 'I Want to' | 'I Need to' | 'Other';
 };

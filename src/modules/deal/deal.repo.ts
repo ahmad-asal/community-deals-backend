@@ -61,6 +61,11 @@ const repo = {
             whereConditions.status = filters.status;
         }
 
+        // Filter by type
+        if (filters.type) {
+            whereConditions.type = filters.type;
+        }
+
         // Filter by activity (active or expired)
         if (filters.activity) {
             if (filters.activity === 'active') {
