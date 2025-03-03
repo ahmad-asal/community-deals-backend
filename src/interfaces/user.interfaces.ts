@@ -24,6 +24,7 @@ export interface Role {
     created_at: string | undefined;
     updated_at: string | undefined;
 }
+
 export type rolesList = Role[];
 export type favoriteDeals = Deal[];
 
@@ -49,3 +50,10 @@ export enum rolesTypes {
 }
 
 export type userStatus = 'pending' | 'active' | 'suspended' | 'deleted';
+
+export const possibleUserStatuses: userStatus[] = [
+    'pending',
+    'active',
+    'suspended',
+    'deleted',
+];
