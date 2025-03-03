@@ -8,9 +8,11 @@ export interface Deal {
     status: DealStatuses;
     created_at?: string;
     updated_at?: string;
+    type: DealTypes;
 }
 
 export type DealStatuses = 'In Review' | 'Approved' | 'Rejected' | 'Deleted';
+export type DealTypes = 'I Want to' | 'I Need to' | 'Other';
 
 export function isValidDealStatus(value: string): value is DealStatuses {
     const ValidDealStatus: string[] = [

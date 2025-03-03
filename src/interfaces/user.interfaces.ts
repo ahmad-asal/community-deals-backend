@@ -49,10 +49,11 @@ export enum rolesTypes {
     admin = 2,
 }
 
-export type userStatus = 'pending' | 'active' | 'suspended';
+export type userStatus = 'pending' | 'active' | 'suspended' | 'deleted';
 
 export const possibleUserStatuses: userStatus[] = [
     'pending',
     'active',
     'suspended',
+    'deleted',
 ];

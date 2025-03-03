@@ -27,6 +27,11 @@ const repo = {
             whereConditions.categoryId = filters.categoryId;
         }
 
+        // Filter by user
+        if (filters.authorId) {
+            whereConditions.autherId = filters.authorId;
+        }
+
         // Filter by created date range
         if (filters.createdAt) {
             const dateRanges: any = {
@@ -113,6 +118,22 @@ const repo = {
                             exclude: ['password', 'created_at', 'updated_at'],
                         },
                     },
+                    {
+                        model: DB.Comments,
+                        as: 'comments',
+                        include: [
+                            {
+                                model: DB.User,
+                                as: 'author',
+                                attributes: [
+                                    'id',
+                                    'name',
+                                    'email',
+                                    'profileImg',
+                                ],
+                            },
+                        ],
+                    },
                 ],
                 order: [['id', 'DESC']],
             });
@@ -139,6 +160,7 @@ const repo = {
                 status: 'In Review',
                 expiryDate: deals_data.expiryDate,
                 autherId: deals_data.autherId,
+                type: deals_data.type,
             });
 
             // Create the associated image records
@@ -295,6 +317,22 @@ const repo = {
                         attributes: {
                             exclude: ['password', 'created_at', 'updated_at'],
                         },
+                    },
+                    {
+                        model: DB.Comments,
+                        as: 'comments',
+                        include: [
+                            {
+                                model: DB.User,
+                                as: 'author',
+                                attributes: [
+                                    'id',
+                                    'name',
+                                    'email',
+                                    'profileImg',
+                                ],
+                            },
+                        ],
                     },
                 ],
             });
