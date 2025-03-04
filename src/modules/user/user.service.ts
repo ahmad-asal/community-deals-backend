@@ -23,3 +23,18 @@ export const getUserProfileService = async (accessToken: string, id?: any) => {
 export const getAllUsers = async (): Promise<User[]> => {
     return await repo.getAllUsers();
 };
+
+export const getStatisticsService = async () => {
+    try {
+        const dealsByStatus = await repo.getDealsByStatus();
+        const usersByStatus = await repo.getUsersByStatus();
+
+        return {
+            dealsByStatus,
+            usersByStatus,
+        };
+    } catch (error) {
+        console.error('Error fetching statistics:', error);
+        throw new CustomError('Internal Server Error', 500);
+    }
+};

@@ -6,6 +6,7 @@ import {
     User,
     userStatus,
 } from '@/interfaces/user.interfaces';
+import { Sequelize } from 'sequelize';
 
 export const repo = {
     getUserProfile: async (
@@ -108,6 +109,27 @@ export const repo = {
             where: {
                 id: userId,
             },
+        });
+    },
+    async getDealsByStatus() {
+        return await DB.Deals.findAll({
+            attributes: [
+                'status',
+                [Sequelize.fn('COUNT', Sequelize.col('status')), 'count'],
+            ],
+            group: ['status'],
+            raw: true,
+        });
+    },
+
+    async getUsersByStatus() {
+        return await UserModel.findAll({
+            attributes: [
+                'status',
+                [Sequelize.fn('COUNT', Sequelize.col('status')), 'count'],
+            ],
+            group: ['status'],
+            raw: true,
         });
     },
 };

@@ -7,6 +7,7 @@ import {
     getUserDeals,
     updateUserData,
     getUsersByStatus,
+    getStatistics,
 } from './user.controller';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { rolesTypes } from '@/interfaces/user.interfaces';
@@ -40,6 +41,12 @@ userRouter.get(
     authMiddleware,
     authorizeRole([rolesTypes.user, rolesTypes.admin]),
     getUsersByStatus,
+);
+userRouter.get(
+    '/statistics',
+    authMiddleware,
+    authorizeRole([rolesTypes.admin]),
+    getStatistics,
 );
 
 export default userRouter;
