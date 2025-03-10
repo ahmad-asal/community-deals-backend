@@ -205,3 +205,20 @@ export const updateUserData = async (
         next(error);
     }
 };
+
+export const getStatistics = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { context: { roles: userRoles } = {} } = req;
+        if (!userRoles.includes(rolesTypes.admin)) {
+            throw new CustomError('You need to have an admin role ', 403);
+        }
+        const statistics = await userService.getStatisticsService();
+        res.json(statistics);
+    } catch (error) {
+        next(error);
+    }
+};
