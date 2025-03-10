@@ -7,4 +7,5 @@ export type dealFilters = {
     intrestedOnly?: boolean;
     authorId?: number;
     country?: string;
+    type?: 'I Want to' | 'I Need to' | 'Other';
 };
