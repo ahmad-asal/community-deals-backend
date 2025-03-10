@@ -76,6 +76,13 @@ const repo = {
                 };
             }
         }
+        // Filter by countries (allow multiple countries or null values)
+        if (filters.country && Array.isArray(filters.country)) {
+            whereConditions[Op.or] = [
+                { country: { [Op.in]: filters.country } }, // Match any of the countries
+                { country: { [Op.is]: null } }, // Include deals where country is NULL
+            ];
+        }
 
         try {
             // Fetch all deals from the Deals table
@@ -149,7 +156,7 @@ const repo = {
         });
     },
     addOne: async (
-        deals_data: Deal & { imageUrls?: string[] },
+        deals_data: Deal & { imageUrls?: string[]; countries?: string[] },
     ): Promise<DealModel | null> => {
         try {
             // Create the deal
@@ -162,6 +169,7 @@ const repo = {
                 autherId: deals_data.autherId,
                 type: deals_data.type,
             });
+            console.log('deals_data', deals_data);
 
             // Create the associated image records
             if (deals_data.imageUrls && deals_data.imageUrls.length > 0) {
@@ -172,6 +180,28 @@ const repo = {
                     }),
                 );
                 await Promise.all(imagePromises); // Wait for all image records to be created
+            }
+
+            // Fetch city IDs based on country names
+            if (deals_data?.countries?.length) {
+                console.log('deals_data.countries', deals_data.countries);
+
+                const cities = await DB.Cities.findAll({
+                    where: { name: { [Op.in]: deals_data.countries } },
+                    attributes: ['id'],
+                });
+
+                const cityIds = cities.map(city => city.id);
+                console.log(cityIds, '11111111111', deals_data.countries);
+
+                // Associate deal with the retrieved city IDs
+                if (cityIds.length > 0) {
+                    await Promise.all(
+                        cityIds.map(cityId =>
+                            DB.DealCities.create({ dealId: deal.id, cityId }),
+                        ),
+                    );
+                }
             }
 
             return deal;

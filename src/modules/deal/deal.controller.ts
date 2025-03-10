@@ -22,6 +22,7 @@ export const getDeals = async (
                 activity,
                 intrestedOnly = false,
                 authorId,
+                country,
             },
         } = req;
 
@@ -33,6 +34,7 @@ export const getDeals = async (
             activity: activity as 'active' | 'expired' | undefined,
             intrestedOnly: intrestedOnly as boolean,
             authorId: authorId ? Number(authorId) : undefined,
+            country: country as string | undefined,
         };
 
         const response = await dealService.getDeals(userId, filters);

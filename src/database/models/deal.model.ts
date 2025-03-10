@@ -2,6 +2,7 @@ import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CategoryModel } from '@/database/models/category.model';
 import { Deal, DealStatuses, DealTypes } from '@/interfaces/deal.interface';
 import { UserModel } from '@/database/models/user.model';
+import { CityModel } from './city.model';
 
 type DealCreationAttributes = Optional<Deal, 'id' | 'expiryDate' | 'type'>;
 
@@ -74,5 +75,10 @@ export default function (sequelize: Sequelize): typeof DealModel {
         foreignKey: 'autherId',
     });
     DealModel.belongsTo(UserModel, { as: 'auther' });
+    // DealModel.belongsToMany(CityModel, {
+    //     through: DealCitiesModel,
+    //     foreignKey: 'dealId',
+    //     otherKey: 'cityId',
+    // });
     return DealModel;
 }
