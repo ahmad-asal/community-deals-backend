@@ -13,7 +13,7 @@ export const getDeals = async (
 ): Promise<void> => {
     try {
         const {
-            context: { userId } = {},
+            context: { userId, roles: userRoles } = {},
             query: {
                 categoryId,
                 status,
@@ -24,8 +24,22 @@ export const getDeals = async (
                 authorId,
                 country,
                 type,
+                countries,
             },
         } = req;
+
+        const authorization = req.headers.authorization;
+        const accessToken = authorization?.split(' ')[1];
+
+        // Normalize countries to always be an array
+        let normalizedCountries: string[] = [];
+        if (countries) {
+            if (Array.isArray(countries)) {
+                normalizedCountries = countries as string[]; // Already an array
+            } else {
+                normalizedCountries = [countries as string]; // Convert single value to an array
+            }
+        }
 
         const filters: dealFilters = {
             categoryId: categoryId ? Number(categoryId) : undefined,
@@ -35,11 +49,18 @@ export const getDeals = async (
             activity: activity as 'active' | 'expired' | undefined,
             intrestedOnly: intrestedOnly as boolean,
             authorId: authorId ? Number(authorId) : undefined,
-            country: country as string | undefined,
+            countries: normalizedCountries,
             type: type as 'I Want to' | 'I Need to' | 'Other' | undefined,
         };
 
-        const response = await dealService.getDeals(userId, filters);
+        const isAdmin = userRoles.includes(rolesTypes.admin);
+
+        const response = await dealService.getDeals(
+            userId,
+            filters,
+            accessToken,
+            isAdmin,
+        );
 
         res.status(200).json({
             message: 'Successfully get Deals',

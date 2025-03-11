@@ -43,16 +43,16 @@ export default function (sequelize: Sequelize): typeof DealCitiesModel {
             timestamps: true,
         },
     );
-
-    DealModel.belongsToMany(CityModel, {
-        through: DealCitiesModel,
-        foreignKey: 'dealId',
-        otherKey: 'cityId',
-    });
     CityModel.belongsToMany(DealModel, {
         through: DealCitiesModel,
         foreignKey: 'cityId',
         otherKey: 'dealId',
+    });
+    DealModel.belongsToMany(CityModel, {
+        through: DealCitiesModel,
+        foreignKey: 'dealId',
+        otherKey: 'cityId',
+        as: 'cities',
     });
 
     return DealCitiesModel;

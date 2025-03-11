@@ -8,4 +8,5 @@ export type dealFilters = {
     authorId?: number;
     country?: string;
     type?: 'I Want to' | 'I Need to' | 'Other';
+    countries?: any;
 };
