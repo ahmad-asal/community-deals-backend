@@ -68,8 +68,6 @@ export const getUsersByStatus = async (
 
         filterStatus = filterStatus.map((status) => status.toLowerCase());
 
-        console.log(status);
-
         const matchingUsers = users.filter(user =>
             filterStatus.includes(user.status),
         );
