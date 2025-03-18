@@ -63,8 +63,10 @@ export const getUsersByStatus = async (
 
         let filterStatus: any = possibleUserStatuses;
         if (status) {
-            filterStatus = status;
+            filterStatus = [status];
         }
+
+        filterStatus = filterStatus.map((status) => status.toLowerCase());
 
         const matchingUsers = users.filter(user =>
             filterStatus.includes(user.status),
