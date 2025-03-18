@@ -105,22 +105,10 @@ const conversationRepo = {
         });
     },
 
-    deleteConversation: async (conversationId: number, userId: number) => {
-        const conversation = await ConversationModel.findByPk(conversationId);
-
-        if (!conversation) {
-            throw new Error('Conversation not found');
-        }
-
-        let deletedBy = conversation.deletedBy || [];
-
-        if (!deletedBy.includes(userId)) {
-            deletedBy.push(userId);
-        }
-
-        await conversation.update({ deletedBy });
-
-        return conversation;
+    deleteConversation: async (conversationId: number) => {
+        return await ConversationModel.destroy({
+            where: { id: conversationId },
+        });
     },
 };
 
