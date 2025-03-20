@@ -1,11 +1,24 @@
 import dealRepo from './deal.repo';
 import { CustomError } from '@/utils/custom-error';
 import { dealFilters } from './types';
+import { getUserProfileService } from '../user/user.service';
 
 const dealService = {
-    getDeals: async (userId: number, filters: dealFilters) => {
+    getDeals: async (
+        userId: number,
+        filters: dealFilters,
+        accessToken?: any,
+        isAdmin?: boolean,
+    ) => {
         try {
-            const deals = await dealRepo.getAll(userId, filters);
+            const userData = await getUserProfileService(accessToken);
+            const clientCountry = userData.address;
+            const deals = await dealRepo.getAll(
+                userId,
+                filters,
+                clientCountry,
+                isAdmin,
+            );
 
             if (!deals) {
                 throw new CustomError('No deals found', 404);

@@ -10,8 +10,11 @@ const repo = {
     getAll: async (
         userId: number,
         filters: dealFilters,
+        clientCountry?: any,
+        isAdmin?: boolean,
     ): Promise<DealModel[] | null> => {
         console.log({ filters });
+        let clientCountryRequest = clientCountry;
 
         const whereConditions: any = {};
         // Filter by search query (title or description)
@@ -30,6 +33,7 @@ const repo = {
         // Filter by user
         if (filters.authorId) {
             whereConditions.autherId = filters.authorId;
+            clientCountryRequest = null;
         }
 
         // Filter by created date range
@@ -80,6 +84,30 @@ const repo = {
                     [Op.lt]: new Date(), // Expiry date less than current date
                 };
             }
+        }
+
+        if (filters.intrestedOnly) {
+            clientCountryRequest = null;
+        }
+
+        // If no countries are passed in the filter, use the clientCountry parameter
+
+        if (
+            (!filters.countries || filters.countries.length === 0) &&
+            !isAdmin
+        ) {
+            if (clientCountryRequest) {
+                whereConditions[Op.or] = [
+                    { '$cities.country$': { [Op.in]: [clientCountryRequest] } }, // Apply clientCountryRequest if it's defined
+                    { '$cities.country$': { [Op.is]: null } }, // Include deals with no country
+                ];
+            }
+        } else if (filters?.countries?.length > 0) {
+            // If countries are provided in the filters, apply that condition
+            whereConditions[Op.or] = [
+                { '$cities.country$': { [Op.in]: filters.countries } }, // Deals in selected countries
+                { '$cities.country$': { [Op.is]: null } }, // Deals with no country
+            ];
         }
 
         try {
@@ -139,6 +167,13 @@ const repo = {
                             },
                         ],
                     },
+                    {
+                        model: DB.Cities,
+                        attributes: ['id', 'name', 'country'],
+                        through: { attributes: [] },
+                        as: 'cities',
+                        required: false,
+                    },
                 ],
                 order: [['id', 'DESC']],
             });
@@ -154,7 +189,7 @@ const repo = {
         });
     },
     addOne: async (
-        deals_data: Deal & { imageUrls?: string[] },
+        deals_data: Deal & { imageUrls?: string[]; countries?: string[] },
     ): Promise<DealModel | null> => {
         try {
             // Create the deal
@@ -167,6 +202,7 @@ const repo = {
                 autherId: deals_data.autherId,
                 type: deals_data.type,
             });
+            console.log('deals_data', deals_data);
 
             // Create the associated image records
             if (deals_data.imageUrls && deals_data.imageUrls.length > 0) {
@@ -177,6 +213,28 @@ const repo = {
                     }),
                 );
                 await Promise.all(imagePromises); // Wait for all image records to be created
+            }
+
+            // Fetch city IDs based on country names
+            if (deals_data?.countries?.length) {
+                console.log('deals_data.countries', deals_data.countries);
+
+                const cities = await DB.Cities.findAll({
+                    where: { name: { [Op.in]: deals_data.countries } },
+                    attributes: ['id'],
+                });
+
+                const cityIds = cities.map(city => city.id);
+                console.log(cityIds, '11111111111', deals_data.countries);
+
+                // Associate deal with the retrieved city IDs
+                if (cityIds.length > 0) {
+                    await Promise.all(
+                        cityIds.map(cityId =>
+                            DB.DealCities.create({ dealId: deal.id, cityId }),
+                        ),
+                    );
+                }
             }
 
             return deal;
