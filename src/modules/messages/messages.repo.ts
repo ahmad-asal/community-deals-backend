@@ -3,7 +3,10 @@ import { MessageModel } from '@/database/models';
 import { Op } from 'sequelize';
 
 const messageRepo = {
-    getMessagesByConversation: async (conversationId: number) => {
+    getMessagesByConversation: async (
+        conversationId: number,
+        userId: number,
+    ) => {
         const conversation = await DB.Conversations.findOne({
             where: { id: conversationId },
             include: [
@@ -22,6 +25,16 @@ const messageRepo = {
 
         if (!conversation) {
             throw new Error('Conversation not found');
+        }
+
+        // Check if the user is part of the conversation
+        if (
+            conversation.user1Id !== userId &&
+            conversation.user2Id !== userId
+        ) {
+            throw new Error(
+                'Unauthorized: You are not part of this conversation',
+            );
         }
 
         // Fetch messages in this conversation

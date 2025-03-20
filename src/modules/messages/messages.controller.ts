@@ -42,8 +42,12 @@ export const getMessages = async (
 ) => {
     try {
         const { conversationId } = req.params;
+        const authorization = req.headers.authorization;
+
+        const accessToken: any = authorization?.split(' ')[1];
         const messages = await messageService.getMessagesByConversation(
             Number(conversationId),
+            accessToken,
         );
         res.status(200).json(messages);
     } catch (error) {

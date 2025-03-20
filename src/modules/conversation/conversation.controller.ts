@@ -43,13 +43,28 @@ export const deleteConversation = async (
     try {
         const { id } = req.params;
         const authorization = req.headers.authorization;
-        if (!authorization) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-        const accessToken = authorization.split(' ')[1];
+
+        const accessToken: any = authorization?.split(' ')[1];
         await conversationService.deleteConversation(Number(id), accessToken);
         res.status(200).json({ message: 'Conversation deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const unreadMsgsCount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const authorization = req.headers.authorization;
+
+        const accessToken: any = authorization?.split(' ')[1];
+        const unreadCount = await conversationService.unreadMsgsCount(
+            accessToken,
+        );
+        res.status(200).json({ unreadCount });
     } catch (error) {
         next(error);
     }

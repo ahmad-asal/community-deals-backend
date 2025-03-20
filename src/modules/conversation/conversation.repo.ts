@@ -105,10 +105,58 @@ const conversationRepo = {
         });
     },
 
-    deleteConversation: async (conversationId: number) => {
-        return await ConversationModel.destroy({
-            where: { id: conversationId },
-        });
+    deleteConversation: async (conversationId: number, userId: number) => {
+        const conversation = await ConversationModel.findByPk(conversationId);
+
+        if (!conversation) {
+            throw new Error('Conversation not found');
+        }
+
+        let deletedBy = conversation.deletedBy || [];
+
+        if (!deletedBy.includes(userId)) {
+            deletedBy.push(userId);
+        }
+
+        await conversation.update({ deletedBy });
+
+        return conversation;
+    },
+    unreadMsgsCount: async (userId: number) => {
+        try {
+            const result = await DB.Messages.findAll({
+                attributes: [
+                    'conversationId',
+                    [
+                        Sequelize.fn('COUNT', Sequelize.col('MessageModel.id')),
+                        'unreadCount',
+                    ],
+                ],
+                where: {
+                    isRead: false, // Only count unread messages
+                    senderId: {
+                        [Op.ne]: userId, // Exclude messages sent by the user
+                    },
+                },
+                include: [
+                    {
+                        model: DB.Conversations,
+                        as: 'Conversation',
+                        where: {
+                            [Op.or]: [{ user1Id: userId }, { user2Id: userId }],
+                        },
+                        attributes: [], // Exclude Conversation columns from SELECT
+                    },
+                ],
+                group: ['MessageModel.conversationId'], // Group by conversationId
+            });
+
+            // Return the number of conversations with unread messages
+            return result.length;
+        } catch (error) {
+            console.error('Error counting unread messages:', error);
+            throw error;
+        }
     },
 };
 

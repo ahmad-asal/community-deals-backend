@@ -54,6 +54,20 @@ const conversationService = {
             userId,
         );
     },
+    unreadMsgsCount: async (accessToken: string) => {
+        const decodeToken: JwtPayload = await verifyJWT(
+            accessToken,
+            JWT_ACCESS_TOKEN_SECRET as string,
+        );
+
+        const userId = decodeToken.userId;
+
+        if (!userId) {
+            throw new CustomError('User ID is required.', 400);
+        }
+
+        return await conversationRepo.unreadMsgsCount(userId);
+    },
 };
 
 export default conversationService;

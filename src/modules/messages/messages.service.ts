@@ -1,6 +1,9 @@
 import { CustomError } from '@/utils/custom-error';
 import messageRepo from './messages.repo';
 import { MessageModel } from '@/database/models';
+import { JwtPayload } from 'jsonwebtoken';
+import { verifyJWT } from '@/middlewares/jwt.service';
+import { JWT_ACCESS_TOKEN_SECRET } from '@/config';
 
 const messageService = {
     createMessage: async (
@@ -23,12 +26,24 @@ const messageService = {
         return message;
     },
 
-    getMessagesByConversation: async (conversationId: number) => {
+    getMessagesByConversation: async (
+        conversationId: number,
+        accessToken: string,
+    ) => {
+        const decodeToken: JwtPayload = await verifyJWT(
+            accessToken,
+            JWT_ACCESS_TOKEN_SECRET as string,
+        );
+
+        const userId = decodeToken.userId;
         if (!conversationId) {
             throw new CustomError('Conversation ID is required.', 400);
         }
 
-        return await messageRepo.getMessagesByConversation(conversationId);
+        return await messageRepo.getMessagesByConversation(
+            conversationId,
+            userId,
+        );
     },
 
     markMessagesRead: async (conversationId: number, userId: number) => {
