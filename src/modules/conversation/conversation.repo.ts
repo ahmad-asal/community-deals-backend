@@ -90,6 +90,7 @@ const conversationRepo = {
                     attributes: ['id', 'name', 'profileImg'],
                 },
             ],
+            order: [['updatedAt', 'DESC']],
         });
 
         // Add unread messages count for each conversation
