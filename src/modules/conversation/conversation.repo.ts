@@ -74,20 +74,9 @@ const conversationRepo = {
     },
 
     getConversations: async (userId: number) => {
-        return await ConversationModel.findAll({
+        const conversations = await DB.Conversations.findAll({
             where: {
-                [Op.and]: [
-                    {
-                        [Op.or]: [{ user1Id: userId }, { user2Id: userId }],
-                    },
-                    {
-                        deletedBy: {
-                            [Op.not]: {
-                                [Op.contains]: [userId],
-                            },
-                        },
-                    },
-                ],
+                [Op.or]: [{ user1Id: userId }, { user2Id: userId }],
             },
             include: [
                 {
@@ -101,8 +90,27 @@ const conversationRepo = {
                     attributes: ['id', 'name', 'profileImg'],
                 },
             ],
-            order: [['updatedAt', 'DESC']],
         });
+
+        // Add unread messages count for each conversation
+        const conversationsWithUnread = await Promise.all(
+            conversations.map(async conversation => {
+                const unreadMessagesCount = await DB.Messages.count({
+                    where: {
+                        conversationId: conversation.id,
+                        senderId: { [Op.ne]: userId }, // Messages not sent by the current user
+                        isRead: false,
+                    },
+                });
+
+                return {
+                    ...conversation.toJSON(),
+                    unreadMessagesCount,
+                };
+            }),
+        );
+
+        return conversationsWithUnread;
     },
 
     deleteConversation: async (conversationId: number, userId: number) => {
