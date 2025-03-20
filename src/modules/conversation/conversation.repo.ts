@@ -113,22 +113,27 @@ const conversationRepo = {
         return conversationsWithUnread;
     },
 
-    deleteConversation: async (conversationId: number, userId: number) => {
-        const conversation = await ConversationModel.findByPk(conversationId);
+    deleteConversation: async (conversationId: number) => {
+        try {
+            // Delete all messages in the conversation
+            await DB.Messages.destroy({
+                where: { conversationId },
+            });
 
-        if (!conversation) {
-            throw new Error('Conversation not found');
+            // Delete the conversation itself
+            const deleted = await DB.Conversations.destroy({
+                where: { id: conversationId },
+            });
+
+            if (!deleted) {
+                throw new Error('Conversation not found');
+            }
+
+            return { success: true, message: 'Conversation deleted' };
+        } catch (error) {
+            console.error('Error deleting conversation:', error);
+            throw new Error('Failed to delete conversation');
         }
-
-        let deletedBy = conversation.deletedBy || [];
-
-        if (!deletedBy.includes(userId)) {
-            deletedBy.push(userId);
-        }
-
-        await conversation.update({ deletedBy });
-
-        return conversation;
     },
     unreadMsgsCount: async (userId: number) => {
         try {
