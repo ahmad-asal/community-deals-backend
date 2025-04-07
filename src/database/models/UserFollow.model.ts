@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { UserModel } from './user.model';
 
 export interface UserFollow {
@@ -8,8 +8,14 @@ export interface UserFollow {
     createdAt?: Date | undefined;
     updatedA?: Date | undefined;
 }
+// Define an interface for creation attributes
+// This allows creating without an id
+export type UserFollowCreationAttributes = Optional<UserFollow, 'id'>;
 
-export class UserFollowModel extends Model<UserFollow> implements UserFollow {
+export class UserFollowModel
+    extends Model<UserFollow, UserFollowCreationAttributes>
+    implements UserFollow
+{
     public id!: number;
     public followerId!: number;
     public followingId!: number;
