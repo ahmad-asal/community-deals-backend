@@ -153,20 +153,21 @@ const repo = {
             // Filter deals based on audience type
             const filteredDeals = await Promise.all(
                 deals.map(async (deal: any) => {
-                    if (deal.audience === 'public') {
+                    if (
+                        deal.audience === 'public' ||
+                        deal.auther.id === userId
+                    ) {
                         return deal; // Everyone can see
                     }
 
                     if (deal.audience === 'friends') {
-                        const isFriend = await DB.Friends.findOne({
+                        const isFollowing = await DB.UserFollowModel.findOne({
                             where: {
-                                [Op.or]: [
-                                    { userId: userId, friendId: deal.autherId },
-                                    { userId: deal.autherId, friendId: userId },
-                                ],
+                                followerId: userId, // Logged-in user
+                                followingId: deal.auther.id, // Deal creator
                             },
                         });
-                        return isFriend ? deal : null; // Only friends can see
+                        return isFollowing ? deal : null; // Only followers can see
                     }
 
                     if (deal.audience === 'custom') {
