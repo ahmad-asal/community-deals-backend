@@ -5,6 +5,7 @@ import categoryModel from './models/category.model';
 import roleModel from './models/role.model';
 import UserRoleModel from './models/userrole.model';
 import FavoriteDealsModel from './models/favoritedeal.model';
+import UserFollowModel from './models/UserFollow.model';
 
 import DealModel from './models/deal.model';
 
@@ -21,6 +22,7 @@ import dealImageModel from './models/dealImage.model';
 import commentsModel from './models/comments.model';
 import messageModel from './models/message.model';
 import conversationModel from './models/conversation.model';
+import customAudienceModel from './models/customAudience.model';
 
 export const sequelize = new Sequelize.Sequelize(
     DB_NAME as string,
@@ -56,12 +58,14 @@ export const DB = {
     Role: roleModel(sequelize),
     UserRole: UserRoleModel(sequelize),
     Categories: categoryModel(sequelize),
+    UserFollowModel: UserFollowModel(sequelize),
     Deals: DealModel(sequelize),
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
     Comments: commentsModel(sequelize),
     Messages: messageModel(sequelize),
     Conversations: conversationModel(sequelize),
+    CustomAudienceModel: customAudienceModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };

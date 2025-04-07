@@ -1,9 +1,17 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { CategoryModel } from '@/database/models/category.model';
-import { Deal, DealStatuses, DealTypes } from '@/interfaces/deal.interface';
+import {
+    Deal,
+    DealAudienceType,
+    DealStatuses,
+    DealTypes,
+} from '@/interfaces/deal.interface';
 import { UserModel } from '@/database/models/user.model';
 
-type DealCreationAttributes = Optional<Deal, 'id' | 'expiryDate' | 'type'>;
+type DealCreationAttributes = Optional<
+    Deal,
+    'id' | 'expiryDate' | 'type' | 'audience'
+>;
 
 export class DealModel extends Model<Deal, DealCreationAttributes> {
     id!: number;
@@ -14,6 +22,7 @@ export class DealModel extends Model<Deal, DealCreationAttributes> {
     expiryDate!: Date | null;
     status!: DealStatuses;
     type!: DealTypes;
+    audience!: DealAudienceType;
 }
 
 export default function (sequelize: Sequelize): typeof DealModel {
@@ -64,6 +73,11 @@ export default function (sequelize: Sequelize): typeof DealModel {
                 allowNull: false,
                 defaultValue: 'Other',
             },
+            audience: {
+                type: DataTypes.ENUM('public', 'friends', 'custom'),
+                allowNull: false,
+                defaultValue: 'public',
+            },
         },
         {
             sequelize,
@@ -72,7 +86,9 @@ export default function (sequelize: Sequelize): typeof DealModel {
     );
     UserModel.hasMany(DealModel, {
         foreignKey: 'autherId',
+        as: 'deals',
     });
-    DealModel.belongsTo(UserModel, { as: 'auther' });
+    DealModel.belongsTo(UserModel, { foreignKey: 'autherId', as: 'auther' });
+
     return DealModel;
 }

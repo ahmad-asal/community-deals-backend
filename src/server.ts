@@ -6,7 +6,7 @@ import axios from 'axios';
 import router from '@routes/routes';
 import logger from '@utils/logger';
 import { DB } from '@database/index';
-import { PORT } from './config';
+import { PORT, BASE_URL } from './config';
 import { errorHandler } from './utils/error-handler';
 import { swaggerSpec, swaggerUi } from './utils/swagger';
 import path from 'path';
@@ -45,6 +45,7 @@ appServer.use((req, res, next) => {
 
 // Middleware
 appServer.use(cors(corsOptions));
+appServer.options('*', cors(corsOptions));
 appServer.use(express.json());
 appServer.use(express.urlencoded({ extended: true }));
 appServer.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -82,14 +83,11 @@ io.on('connection', socket => {
             const { conversationId, senderId, content, receiverId } =
                 messageData;
 
-            const response = await axios.post(
-                `http://localhost:${port}/api/messages`,
-                {
-                    conversationId,
-                    senderId,
-                    content,
-                },
-            );
+            const response = await axios.post(`${BASE_URL}/api/messages`, {
+                conversationId,
+                senderId,
+                content,
+            });
 
             const savedMessage = response.data;
             // Emit message to all clients in the conversation
