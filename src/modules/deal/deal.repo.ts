@@ -6,6 +6,7 @@ import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
 import { dealFilters } from './types';
 import { omitAndPartial } from '@/utilities';
+import { DealFileModel } from '@/database/models/dealFile.model';
 const repo = {
     getAll: async (
         userId: number,
@@ -108,6 +109,10 @@ const repo = {
                         as: 'images', // Match the alias in the association
                     },
                     {
+                        model: DealFileModel,
+                        as: 'files', // Match the alias in the association
+                    },
+                    {
                         model: DB.User,
                         attributes: [],
                         through: { attributes: [] }, // Join table // where: { userId }
@@ -154,7 +159,7 @@ const repo = {
         });
     },
     addOne: async (
-        deals_data: Deal & { imageUrls?: string[] },
+        deals_data: Deal & { imageUrls?: string[]; fileUrls?: string[] },
     ): Promise<DealModel | null> => {
         try {
             // Create the deal
@@ -177,6 +182,19 @@ const repo = {
                     }),
                 );
                 await Promise.all(imagePromises); // Wait for all image records to be created
+            }
+
+            // Save file URLs
+            if (deals_data.fileUrls && deals_data.fileUrls.length > 0) {
+                const filePromises = deals_data.fileUrls.map((file: any) =>
+                    DB.DealFiles.create({
+                        dealId: deal.id,
+                        fileUrl: file.url,
+                        fileName: file.name,
+                        fileType: file.type || null,
+                    }),
+                );
+                await Promise.all(filePromises);
             }
 
             return deal;
