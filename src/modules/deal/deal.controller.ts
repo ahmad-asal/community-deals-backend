@@ -13,7 +13,7 @@ export const getDeals = async (
 ): Promise<void> => {
     try {
         const {
-            context: { userId } = {},
+            context: { userId, roles: userRoles } = {},
             query: {
                 categoryId,
                 status,
@@ -37,7 +37,9 @@ export const getDeals = async (
             type: type as 'I Want to' | 'I Need to' | 'Other' | undefined,
         };
 
-        const response = await dealService.getDeals(userId, filters);
+        const isAdmin = userRoles.includes(rolesTypes.admin);
+
+        const response = await dealService.getDeals(userId, filters, isAdmin);
 
         res.status(200).json({
             message: 'Successfully get Deals',
