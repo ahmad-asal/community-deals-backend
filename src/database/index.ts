@@ -5,6 +5,7 @@ import categoryModel from './models/category.model';
 import roleModel from './models/role.model';
 import UserRoleModel from './models/userrole.model';
 import FavoriteDealsModel from './models/favoritedeal.model';
+import UserFollowModel from './models/UserFollow.model';
 
 import DealModel from './models/deal.model';
 
@@ -54,6 +55,7 @@ export const DB = {
     Role: roleModel(sequelize),
     UserRole: UserRoleModel(sequelize),
     Categories: categoryModel(sequelize),
+    UserFollowModel: UserFollowModel(sequelize),
     Deals: DealModel(sequelize),
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
