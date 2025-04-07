@@ -6,6 +6,7 @@ import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
 import { dealFilters } from './types';
 import { omitAndPartial } from '@/utilities';
+import { CustomAudienceModel } from '@/database/models/customAudience.model';
 const repo = {
     getAll: async (
         userId: number,
@@ -17,6 +18,7 @@ const repo = {
         let clientCountryRequest = clientCountry;
 
         const whereConditions: any = {};
+
         // Filter by search query (title or description)
         if (filters.query) {
             whereConditions[Op.or] = [
@@ -118,13 +120,12 @@ const repo = {
                         [
                             // Subquery to check if the deal is marked as interested by the user
                             Sequelize.literal(`( 
-                            SELECT CASE WHEN EXISTS(
-                                SELECT *
-                                FROM "favorite_deal" AS ufd
-                                WHERE ufd."dealId" = "deals"."id" AND ufd."userId" = ${userId}
-                            ) THEN 'TRUE' ELSE 'FALSE' END
-                          
-                            )`),
+                    SELECT CASE WHEN EXISTS(
+                        SELECT *
+                        FROM "favorite_deal" AS ufd
+                        WHERE ufd."dealId" = "deals"."id" AND ufd."userId" = ${userId}
+                    ) THEN 'TRUE' ELSE 'FALSE' END
+                  )`),
                             'isInterested',
                         ],
                     ],
@@ -177,7 +178,47 @@ const repo = {
                 ],
                 order: [['id', 'DESC']],
             });
-            return deals;
+
+            // **Skip audience filtering if the user is an admin**
+            if (isAdmin) {
+                return deals;
+            }
+
+            // Filter deals based on audience type
+            const filteredDeals = await Promise.all(
+                deals.map(async (deal: any) => {
+                    if (
+                        deal.audience === 'public' ||
+                        deal.auther.id === userId
+                    ) {
+                        return deal; // Everyone can see
+                    }
+
+                    if (deal.audience === 'friends') {
+                        const isFollowing = await DB.UserFollowModel.findOne({
+                            where: {
+                                followerId: userId, // Logged-in user
+                                followingId: deal.auther.id, // Deal creator
+                            },
+                        });
+                        return isFollowing ? deal : null; // Only followers can see
+                    }
+
+                    if (deal.audience === 'custom') {
+                        const isAuthorized = await CustomAudienceModel.findOne({
+                            where: {
+                                dealId: deal.id,
+                                userId: userId,
+                            },
+                        });
+                        return isAuthorized ? deal : null; // Only selected users can see
+                    }
+
+                    return null; // Hide the deal if no conditions are met
+                }),
+            );
+
+            return filteredDeals.filter(Boolean); // Remove `null` values
         } catch (error) {
             console.error('Error fetching deals:', error);
             return null;
@@ -189,7 +230,11 @@ const repo = {
         });
     },
     addOne: async (
-        deals_data: Deal & { imageUrls?: string[]; countries?: string[] },
+        deals_data: Deal & {
+            imageUrls?: string[];
+            countries?: string[];
+            audienceUserIds?: number[];
+        },
     ): Promise<DealModel | null> => {
         try {
             // Create the deal
@@ -201,6 +246,7 @@ const repo = {
                 expiryDate: deals_data.expiryDate,
                 autherId: deals_data.autherId,
                 type: deals_data.type,
+                audience: deals_data.audience,
             });
             console.log('deals_data', deals_data);
 
@@ -225,7 +271,6 @@ const repo = {
                 });
 
                 const cityIds = cities.map(city => city.id);
-                console.log(cityIds, '11111111111', deals_data.countries);
 
                 // Associate deal with the retrieved city IDs
                 if (cityIds.length > 0) {
@@ -235,6 +280,20 @@ const repo = {
                         ),
                     );
                 }
+            }
+            // Handle custom audience
+            if (
+                deals_data.audience === 'custom' &&
+                deals_data.audienceUserIds?.length
+            ) {
+                const audiencePromises = deals_data.audienceUserIds.map(
+                    userId =>
+                        CustomAudienceModel.create({
+                            userId,
+                            dealId: deal.id,
+                        }),
+                );
+                await Promise.all(audiencePromises);
             }
 
             return deal;
