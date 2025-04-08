@@ -448,9 +448,10 @@ const repo = {
         // payload: Partial<ModelAttributes<DealModel>>,
         {
             images,
+            files,
             ...payload
         }: omitAndPartial<
-            Deal & { images?: object[] },
+            Deal & { images?: object[]; files?: object[] },
             'id' | 'created_at' | 'updated_at' | 'status' | 'autherId'
         >,
     ): Promise<void | null> => {
@@ -474,6 +475,31 @@ const repo = {
                 }
             });
             await Promise.all(imagePromises); // Wait for all image records to be created
+        }
+
+        console.log(
+            'files?.lengthfiles?.lengthfiles?.length',
+            files?.length,
+            files,
+        );
+
+        if (files?.length) {
+            const filePromises = files.map(
+                ({ fileUrl, status, fileName }: any) => {
+                    if (status === 'added') {
+                        DB.DealFiles.create({
+                            dealId,
+                            fileUrl,
+                            fileName,
+                        });
+                    } else if (status === 'deleted') {
+                        DB.DealFiles.destroy({
+                            where: { fileUrl, dealId },
+                        });
+                    }
+                },
+            );
+            await Promise.all(filePromises);
         }
     },
 
