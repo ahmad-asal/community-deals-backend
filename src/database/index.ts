@@ -20,6 +20,8 @@ import {
 } from '@/config';
 import dealImageModel from './models/dealImage.model';
 import commentsModel from './models/comments.model';
+import messageModel from './models/message.model';
+import conversationModel from './models/conversation.model';
 import customAudienceModel from './models/customAudience.model';
 
 export const sequelize = new Sequelize.Sequelize(
@@ -61,6 +63,8 @@ export const DB = {
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
     Comments: commentsModel(sequelize),
+    Messages: messageModel(sequelize),
+    Conversations: conversationModel(sequelize),
     CustomAudienceModel: customAudienceModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library

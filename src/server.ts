@@ -1,14 +1,22 @@
 import express from 'express';
 import cors from 'cors';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import axios from 'axios';
 import router from '@routes/routes';
 import logger from '@utils/logger';
 import { DB } from '@database/index';
-import { PORT } from './config';
+import { PORT, BASE_URL } from './config';
 import { errorHandler } from './utils/error-handler';
 import { swaggerSpec, swaggerUi } from './utils/swagger';
 import path from 'path';
 
 const appServer = express();
+const server = createServer(appServer);
+const io = new Server(server, {
+    cors: { origin: '*' },
+});
+
 const port = PORT;
 
 const corsOptions = {
@@ -35,23 +43,17 @@ appServer.use((req, res, next) => {
     next();
 });
 
-// Enable CORS
+// Middleware
 appServer.use(cors(corsOptions));
 appServer.options('*', cors(corsOptions));
-
-// Middleware for parsing JSON and URL-encoded bodies
 appServer.use(express.json());
 appServer.use(express.urlencoded({ extended: true }));
-
 appServer.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Use the router with the /api prefix
 appServer.use('/api', router);
 
-// Serve frontend
+// Serve frontend (production)
 if (process.env.NODE_ENV === 'production') {
     appServer.use(express.static(path.join(__dirname, '../../fe_build')));
-
     appServer.get('*', (req, res) =>
         res.sendFile(
             path.resolve(__dirname, '../../', 'fe_build', 'index.html'),
@@ -63,15 +65,52 @@ if (process.env.NODE_ENV === 'production') {
 
 appServer.use(errorHandler);
 
-// appServer.all('*', (req, res) => {
-//     res.status(404).json({ message: 'Sorry! Page not found' });
-// });
+// WebSocket logic
+io.on('connection', socket => {
+    console.log('User connected:', socket.id);
+
+    socket.on('messagesRead', async ({ userId, conversationId }) => {
+        try {
+            io.emit(`updateUnreadCount-${userId}`);
+        } catch (error) {
+            console.error('Error marking messages as read:', error);
+        }
+    });
+
+    // Send Message
+    socket.on('sendMessage', async messageData => {
+        try {
+            const { conversationId, senderId, content, receiverId } =
+                messageData;
+
+            const response = await axios.post(`${BASE_URL}/api/messages`, {
+                conversationId,
+                senderId,
+                content,
+            });
+
+            const savedMessage = response.data;
+            // Emit message to all clients in the conversation
+            io.emit(`receiveMessage-${conversationId}`, savedMessage);
+
+            // Notify the receiver of new messages and unread count
+            io.emit(`updateConversations-${receiverId}`);
+            io.emit(`updateUnreadCount-${receiverId}`);
+        } catch (error) {
+            console.error('Error saving message via API:', error);
+        }
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
 
 DB.sequelize
     .authenticate()
     .then(() => {
         logger.info('Database connected successfully!');
-        appServer.listen(port, () => {
+        server.listen(port, () => {
             logger.info(`Server is running on http://localhost:${port}`);
         });
     })
