@@ -6,6 +6,8 @@ import FavoriteDealRouter from '@/modules/favorite_deals/favoriteDeals.routes';
 
 import express from 'express';
 import commentsRouter from '@/modules/comments/comments.routes';
+import conversationsRouter from '@/modules/conversation/conversation.routes';
+import messagesRouter from '@/modules/messages/messages.routes';
 const router = express.Router();
 
 router.use('/auth', authRouter);
@@ -14,5 +16,7 @@ router.use('/category', categoryRouter);
 router.use('/deals', dealsRouter);
 router.use('/favorite-deals', FavoriteDealRouter);
 router.use('/comments', commentsRouter);
+router.use('/conversations', conversationsRouter);
+router.use('/messages', messagesRouter);
 
 export default router;
