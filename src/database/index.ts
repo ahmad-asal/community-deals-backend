@@ -20,7 +20,8 @@ import {
 } from '@/config';
 import dealImageModel from './models/dealImage.model';
 import commentsModel from './models/comments.model';
-import dealFileModel, { DealFileModel } from './models/dealFile.model';
+import dealFileModel from './models/dealFile.model';
+import customAudienceModel from './models/customAudience.model';
 
 export const sequelize = new Sequelize.Sequelize(
     DB_NAME as string,
@@ -62,6 +63,7 @@ export const DB = {
     FavoriteDeal: FavoriteDealsModel(sequelize),
     Comments: commentsModel(sequelize),
     DealFiles: dealFileModel(sequelize),
+    CustomAudienceModel: customAudienceModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };

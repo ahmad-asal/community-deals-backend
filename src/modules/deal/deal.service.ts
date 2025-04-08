@@ -3,9 +3,13 @@ import { CustomError } from '@/utils/custom-error';
 import { dealFilters } from './types';
 
 const dealService = {
-    getDeals: async (userId: number, filters: dealFilters) => {
+    getDeals: async (
+        userId: number,
+        filters: dealFilters,
+        isAdmin: boolean,
+    ) => {
         try {
-            const deals = await dealRepo.getAll(userId, filters);
+            const deals = await dealRepo.getAll(userId, filters, isAdmin);
 
             if (!deals) {
                 throw new CustomError('No deals found', 404);

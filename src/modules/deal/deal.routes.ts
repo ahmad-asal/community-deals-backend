@@ -29,6 +29,11 @@ DealRouter.put(
 );
 
 DealRouter.get('/:id', authMiddleware, getDeal);
-DealRouter.get('/', authMiddleware, getDeals);
+DealRouter.get(
+    '/',
+    authMiddleware,
+    authorizeRole([rolesTypes.user, rolesTypes.admin]),
+    getDeals,
+);
 
 export default DealRouter;

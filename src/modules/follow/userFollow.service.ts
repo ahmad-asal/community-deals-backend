@@ -68,7 +68,7 @@ export class FollowService {
         // }
 
         // Delete follow relationship
-        await existingFollow.destroy();
+        await existingFollow?.destroy();
         return true;
     }
 
