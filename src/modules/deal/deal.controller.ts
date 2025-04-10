@@ -98,12 +98,25 @@ export const updateStatus = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
+        const { context: { userId, roles: userRoles } = {} } = req;
+
         const dealId = req.params.id as unknown as number;
         const { status } = req.body;
 
-        const dealExist = await dealRepo.dealExist(dealId);
+        const dealExist = await dealRepo.getOne(parseInt(dealId));
+
         if (!dealExist) {
             throw new CustomError('deal not found', 404);
+        }
+
+        if (
+            dealExist.autherId != userId &&
+            !userRoles.includes(rolesTypes.admin)
+        ) {
+            throw new CustomError(
+                'You need to have an admin role or to be the auther of the deal',
+                403,
+            );
         }
 
         if (!isValidDealStatus(status)) {

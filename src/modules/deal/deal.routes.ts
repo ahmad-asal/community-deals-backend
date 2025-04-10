@@ -18,7 +18,7 @@ DealRouter.post('/', authMiddleware, addOneController);
 DealRouter.put(
     '/:id/updatestatus',
     authMiddleware,
-    authorizeRole([rolesTypes.admin]),
+    authorizeRole([rolesTypes.user, rolesTypes.admin]),
     updateStatus,
 );
 DealRouter.put(
