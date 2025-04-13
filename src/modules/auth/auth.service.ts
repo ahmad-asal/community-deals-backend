@@ -7,6 +7,7 @@ import { compareSync, hash } from 'bcrypt';
 import { generateJWT } from '@/middlewares/jwt.service';
 import { JWT_ACCESS_TOKEN_SECRET } from '@/config';
 import { CustomError } from '@/utils/custom-error';
+import { verifyOTP } from './otp.service';
 
 export const signUpService = async (userData: User): Promise<void> => {
     const { error } = validateSignUp(userData);
@@ -41,6 +42,7 @@ export const signInService = async (userData: User) => {
         throw new CustomError(error.details[0].message, 400);
     }
 
+    console.log(userData);
     const user = await repo.findUserByEmail(userData.email);
     if (!user) {
         throw new CustomError('Email or password is invalid', 401);
@@ -54,6 +56,15 @@ export const signInService = async (userData: User) => {
     if (user.status !== 'active') {
         throw new CustomError('account is not active', 403);
     }
+
+    // Verify OTP if provided
+    if (userData?.otp) {
+        const isOTPValid = await verifyOTP(userData.email, userData.otp);
+        if (!isOTPValid) {
+            throw new CustomError('Invalid or expired OTP', 403);
+        }
+    }
+  
 
     const payload = {
         userId: user.id,

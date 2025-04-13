@@ -1,6 +1,7 @@
 import { Deal } from './deal.interface';
 
 export interface User {
+    otp?: string;
     id?: string;
     email: string;
     name: string;
@@ -16,6 +17,15 @@ export interface User {
     status: userStatus;
     roles?: rolesList;
     favoriteDeals?: favoriteDeals;
+}
+
+export interface OTP {
+    id?: string;
+    email: string;
+    otp: string;
+    isUsed: boolean;
+    expiresAt: string | undefined;
+
 }
 
 export interface Role {
