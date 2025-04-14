@@ -20,6 +20,7 @@ import {
 } from '@/config';
 import dealImageModel from './models/dealImage.model';
 import commentsModel from './models/comments.model';
+import dealFileModel from './models/dealFile.model';
 import messageModel from './models/message.model';
 import conversationModel from './models/conversation.model';
 import customAudienceModel from './models/customAudience.model';
@@ -63,6 +64,7 @@ export const DB = {
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
     Comments: commentsModel(sequelize),
+    DealFiles: dealFileModel(sequelize),
     Messages: messageModel(sequelize),
     Conversations: conversationModel(sequelize),
     CustomAudienceModel: customAudienceModel(sequelize),
