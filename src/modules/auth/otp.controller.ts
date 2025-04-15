@@ -1,14 +1,19 @@
 import { Request, Response } from 'express';
+import {
+    generateOTP as generateOTPService,
+    saveOTP,
+    verifyOTP as verifyOTPService,
+} from './otp.service';
 
-// controllers/otpController.js
-import { generateOTP, saveOTP, verifyOTP } from './otp.service';
-
-exports.generateOTP = async (req: Request, res: Response): Promise<void> => {
+export const generateOTP = async (
+    req: Request,
+    res: Response,
+): Promise<void> => {
     try {
         const { email } = req.body;
 
         // Generate OTP
-        const otp = generateOTP();
+        const otp = generateOTPService();
 
         // Save OTP to database
         await saveOTP(email, otp);
@@ -26,12 +31,12 @@ exports.generateOTP = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-exports.verifyOTP = async (req: Request, res: Response) => {
+export const verifyOTP = async (req: Request, res: Response) => {
     try {
         const { email, otp } = req.body;
 
         // Verify OTP
-        const isValid = await verifyOTP(email, otp);
+        const isValid = await verifyOTPService(email, otp);
 
         if (!isValid) {
             return res.status(400).json({
@@ -52,4 +57,3 @@ exports.verifyOTP = async (req: Request, res: Response) => {
         });
     }
 };
-export { generateOTP, verifyOTP };
