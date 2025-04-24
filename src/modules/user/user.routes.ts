@@ -65,5 +65,10 @@ userRouter.get(
     authMiddleware,
     followController.isFollowing,
 );
+userRouter.get(
+    '/not-following',
+    authMiddleware,
+    followController.getNotFollowingUsers,
+);
 
 export default userRouter;
