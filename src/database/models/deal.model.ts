@@ -7,6 +7,7 @@ import {
     DealTypes,
 } from '@/interfaces/deal.interface';
 import { UserModel } from '@/database/models/user.model';
+import { CityModel } from './city.model';
 
 type DealCreationAttributes = Optional<
     Deal,
