@@ -22,9 +22,24 @@ export const getDeals = async (
                 activity,
                 intrestedOnly = false,
                 authorId,
+                country,
                 type,
+                countries,
             },
         } = req;
+
+        const authorization = req.headers.authorization;
+        const accessToken = authorization?.split(' ')[1];
+
+        // Normalize countries to always be an array
+        let normalizedCountries: string[] = [];
+        if (countries) {
+            if (Array.isArray(countries)) {
+                normalizedCountries = countries as string[]; // Already an array
+            } else {
+                normalizedCountries = [countries as string]; // Convert single value to an array
+            }
+        }
 
         const filters: dealFilters = {
             categoryId: categoryId ? Number(categoryId) : undefined,
@@ -34,12 +49,18 @@ export const getDeals = async (
             activity: activity as 'active' | 'expired' | undefined,
             intrestedOnly: intrestedOnly as boolean,
             authorId: authorId ? Number(authorId) : undefined,
+            countries: normalizedCountries,
             type: type as 'I Want to' | 'I Need to' | 'Other' | undefined,
         };
 
         const isAdmin = userRoles.includes(rolesTypes.admin);
 
-        const response = await dealService.getDeals(userId, filters, isAdmin);
+        const response = await dealService.getDeals(
+            userId,
+            filters,
+            accessToken,
+            isAdmin,
+        );
 
         res.status(200).json({
             message: 'Successfully get Deals',
@@ -98,12 +119,25 @@ export const updateStatus = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
+        const { context: { userId, roles: userRoles } = {} } = req;
+
         const dealId = req.params.id as unknown as number;
         const { status } = req.body;
 
-        const dealExist = await dealRepo.dealExist(dealId);
+        const dealExist = await dealRepo.getOne(parseInt(dealId));
+
         if (!dealExist) {
             throw new CustomError('deal not found', 404);
+        }
+
+        if (
+            dealExist.autherId != userId &&
+            !userRoles.includes(rolesTypes.admin)
+        ) {
+            throw new CustomError(
+                'You need to have an admin role or to be the auther of the deal',
+                403,
+            );
         }
 
         if (!isValidDealStatus(status)) {

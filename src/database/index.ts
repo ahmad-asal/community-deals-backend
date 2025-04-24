@@ -6,6 +6,7 @@ import roleModel from './models/role.model';
 import UserRoleModel from './models/userrole.model';
 import FavoriteDealsModel from './models/favoritedeal.model';
 import UserFollowModel from './models/UserFollow.model';
+import OtpModel from './models/otp.model';
 
 import DealModel from './models/deal.model';
 
@@ -21,6 +22,8 @@ import {
 import dealImageModel from './models/dealImage.model';
 import commentsModel from './models/comments.model';
 import dealFileModel from './models/dealFile.model';
+import cityModel from './models/city.model';
+import dealCitiesModel from './models/dealCities.model';
 import messageModel from './models/message.model';
 import conversationModel from './models/conversation.model';
 import customAudienceModel from './models/customAudience.model';
@@ -59,15 +62,18 @@ export const DB = {
     Role: roleModel(sequelize),
     UserRole: UserRoleModel(sequelize),
     Categories: categoryModel(sequelize),
+    Cities: cityModel(sequelize),
     UserFollowModel: UserFollowModel(sequelize),
     Deals: DealModel(sequelize),
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
     Comments: commentsModel(sequelize),
     DealFiles: dealFileModel(sequelize),
+    DealCities: dealCitiesModel(sequelize),
     Messages: messageModel(sequelize),
     Conversations: conversationModel(sequelize),
     CustomAudienceModel: customAudienceModel(sequelize),
+    Otp: OtpModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };

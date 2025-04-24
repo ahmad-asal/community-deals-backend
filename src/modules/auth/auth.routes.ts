@@ -4,8 +4,13 @@ import {
     signUpController,
     changePasswordController,
 } from './auth.controller';
+import { generateOTP, verifyOTP } from './otp.controller';
 
 const authRouter = express.Router();
+
+// OTP routes
+authRouter.post('/generate-otp', generateOTP);
+authRouter.post('/verify-otp', verifyOTP);
 
 authRouter.post('/signup', signUpController);
 authRouter.post('/signin', signInController);
