@@ -21,6 +21,7 @@ import {
 } from '@/config';
 import dealImageModel from './models/dealImage.model';
 import commentsModel from './models/comments.model';
+import dealFileModel from './models/dealFile.model';
 import cityModel from './models/city.model';
 import dealCitiesModel from './models/dealCities.model';
 import messageModel from './models/message.model';
@@ -67,6 +68,7 @@ export const DB = {
     DealImages: dealImageModel(sequelize),
     FavoriteDeal: FavoriteDealsModel(sequelize),
     Comments: commentsModel(sequelize),
+    DealFiles: dealFileModel(sequelize),
     DealCities: dealCitiesModel(sequelize),
     Messages: messageModel(sequelize),
     Conversations: conversationModel(sequelize),

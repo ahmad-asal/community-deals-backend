@@ -6,6 +6,7 @@ import { Deal, DealStatuses } from '@/interfaces/deal.interface';
 import { Op, Sequelize } from 'sequelize';
 import { dealFilters } from './types';
 import { omitAndPartial } from '@/utilities';
+import { DealFileModel } from '@/database/models/dealFile.model';
 import { CustomAudienceModel } from '@/database/models/customAudience.model';
 const repo = {
     getAll: async (
@@ -19,8 +20,8 @@ const repo = {
 
         const whereConditions: any = {};
 
-        if(filters.status === "In Review" && !isAdmin) {
-            filters.authorId = userId
+        if (filters.status === 'In Review' && !isAdmin) {
+            filters.authorId = userId;
         }
 
         // Filter by search query (title or description)
@@ -141,6 +142,10 @@ const repo = {
                         as: 'images', // Match the alias in the association
                     },
                     {
+                        model: DealFileModel,
+                        as: 'files', // Match the alias in the association
+                    },
+                    {
                         model: DB.User,
                         attributes: [],
                         through: { attributes: [] }, // Join table // where: { userId }
@@ -236,8 +241,9 @@ const repo = {
     addOne: async (
         deals_data: Deal & {
             imageUrls?: string[];
-            countries?: string[];
             audienceUserIds?: number[];
+            fileUrls?: string[];
+            countries?: string[];
         },
     ): Promise<DealModel | null> => {
         try {
@@ -263,6 +269,19 @@ const repo = {
                     }),
                 );
                 await Promise.all(imagePromises); // Wait for all image records to be created
+            }
+
+            // Save file URLs
+            if (deals_data.fileUrls && deals_data.fileUrls.length > 0) {
+                const filePromises = deals_data.fileUrls.map((file: any) =>
+                    DB.DealFiles.create({
+                        dealId: deal.id,
+                        fileUrl: file.url,
+                        fileName: file.name,
+                        fileType: file.type || null,
+                    }),
+                );
+                await Promise.all(filePromises);
             }
 
             // Fetch city IDs based on country names
@@ -433,6 +452,10 @@ const repo = {
                         as: 'images', // Match the alias in the association
                     },
                     {
+                        model: DealFileModel,
+                        as: 'files', // Match the alias in the association
+                    },
+                    {
                         model: CategoryModel,
                         as: 'category',
                         attributes: ['category_name'],
@@ -486,9 +509,10 @@ const repo = {
         // payload: Partial<ModelAttributes<DealModel>>,
         {
             images,
+            files,
             ...payload
         }: omitAndPartial<
-            Deal & { images?: object[] },
+            Deal & { images?: object[]; files?: object[] },
             'id' | 'created_at' | 'updated_at' | 'status' | 'autherId'
         >,
     ): Promise<void | null> => {
@@ -512,6 +536,31 @@ const repo = {
                 }
             });
             await Promise.all(imagePromises); // Wait for all image records to be created
+        }
+
+        console.log(
+            'files?.lengthfiles?.lengthfiles?.length',
+            files?.length,
+            files,
+        );
+
+        if (files?.length) {
+            const filePromises = files.map(
+                ({ fileUrl, status, fileName }: any) => {
+                    if (status === 'added') {
+                        DB.DealFiles.create({
+                            dealId,
+                            fileUrl,
+                            fileName,
+                        });
+                    } else if (status === 'deleted') {
+                        DB.DealFiles.destroy({
+                            where: { fileUrl, dealId },
+                        });
+                    }
+                },
+            );
+            await Promise.all(filePromises);
         }
     },
 
