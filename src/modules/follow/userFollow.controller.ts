@@ -137,4 +137,32 @@ export class FollowController {
             next(error);
         }
     };
+
+    /**
+     * Get users that the current user is not following (you may know)
+     */
+    public getNotFollowingUsers = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { context: { userId } = {} } = req;
+            const limit = Number(req.query.limit) || 10;
+            const offset = Number(req.query.offset) || 0;
+
+            const notFollowingUsers = await this.followService.getNotFollowingUsers(
+                userId,
+                limit,
+                offset,
+            );
+
+            res.status(200).json({
+                data: notFollowingUsers,
+                message: 'Users you may know retrieved successfully',
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
 }

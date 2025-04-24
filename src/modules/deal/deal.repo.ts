@@ -19,6 +19,10 @@ const repo = {
 
         const whereConditions: any = {};
 
+        if(filters.status === "In Review" && !isAdmin) {
+            filters.authorId = userId
+        }
+
         // Filter by search query (title or description)
         if (filters.query) {
             whereConditions[Op.or] = [

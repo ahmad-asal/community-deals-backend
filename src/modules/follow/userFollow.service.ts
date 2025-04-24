@@ -1,5 +1,6 @@
 import { UserFollowModel } from '@/database/models/UserFollow.model';
 import { UserModel } from '@/database/models/user.model';
+import { Op } from 'sequelize';
 
 export class FollowService {
     public userFollowModel = UserFollowModel;
@@ -138,5 +139,37 @@ export class FollowService {
         });
 
         return !!follow;
+    }
+
+    /**
+     * Get users that the current user is not following
+     */
+    public async getNotFollowingUsers(
+        userId: number,
+        limit = 10,
+        offset = 0,
+    ): Promise<{ count: number; rows: UserModel[] }> {
+        // Get all users that the current user is following
+        const followingUsers = await this.userFollowModel.findAll({
+            where: { followerId: userId },
+            attributes: ['followingId'],
+        });
+
+        const followingIds = followingUsers.map(follow => follow.followingId);
+
+        // Get all users except the current user and those they're following
+        return await this.userModel.findAndCountAll({
+            where: {
+                id: {
+                    [Op.notIn]: [...followingIds, userId], // Exclude current user and following users
+                },
+            },
+            attributes: {
+                exclude: ['password', 'created_at', 'updated_at'],
+            },
+            limit,
+            offset,
+            order: [['name', 'ASC']], // Order by name alphabetically
+        });
     }
 }

@@ -52,6 +52,7 @@ export const validateSignIn = (userData: any) => {
             'any.required': 'Email is required',
         }),
         password: Joi.string().required(),
+        otp: Joi.string().optional(),
     });
 
     return schema.validate(userData, options);
