@@ -188,6 +188,7 @@ export const updateDeal = async (
             images,
             type,
             files,
+            countries,
         }) => ({
             title,
             description,
@@ -196,6 +197,7 @@ export const updateDeal = async (
             images,
             type,
             files,
+            countries,
         }))(req.body);
 
         await dealRepo.updateDeal(parseInt(dealId), payload);

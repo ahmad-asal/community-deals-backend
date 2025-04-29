@@ -483,8 +483,16 @@ const repo = {
                             },
                         ],
                     },
+                    {
+                        model: DB.Cities,
+                        attributes: ['id', 'name', 'country'],
+                        through: { attributes: [] },
+                        as: 'cities',
+                        required: false,
+                    },
                 ],
             });
+
             return deal;
         } catch (error) {
             console.error('Error fetching deal by id:', error);
@@ -506,61 +514,107 @@ const repo = {
     },
     updateDeal: async (
         dealId: number,
-        // payload: Partial<ModelAttributes<DealModel>>,
         {
             images,
             files,
+            countries,
             ...payload
         }: omitAndPartial<
-            Deal & { images?: object[]; files?: object[] },
+            Deal & { images?: object[]; files?: object[]; countries?: any },
             'id' | 'created_at' | 'updated_at' | 'status' | 'autherId'
         >,
     ): Promise<void | null> => {
+        // 1. Update deal basic info
         await DB.Deals.update(payload, {
-            where: {
-                id: dealId,
-            },
+            where: { id: dealId },
         });
 
+        // 2. Handle images
         if (images?.length) {
-            const imagePromises = images.map(({ imageUrl, status }: any) => {
-                if (status === 'added') {
-                    DB.DealImages.create({
-                        dealId,
-                        imageUrl,
-                    });
-                } else if (status === 'deleted') {
-                    DB.DealImages.destroy({
-                        where: { imageUrl, dealId },
-                    });
-                }
-            });
-            await Promise.all(imagePromises); // Wait for all image records to be created
-        }
-
-        console.log(
-            'files?.lengthfiles?.lengthfiles?.length',
-            files?.length,
-            files,
-        );
-
-        if (files?.length) {
-            const filePromises = files.map(
-                ({ fileUrl, status, fileName }: any) => {
+            const imagePromises = images.map(
+                async ({ imageUrl, status }: any) => {
                     if (status === 'added') {
-                        DB.DealFiles.create({
-                            dealId,
-                            fileUrl,
-                            fileName,
+                        // Check if image already exists to avoid duplicate
+                        const existingImage = await DB.DealImages.findOne({
+                            where: { dealId, imageUrl },
                         });
+
+                        if (!existingImage) {
+                            await DB.DealImages.create({ dealId, imageUrl });
+                        }
                     } else if (status === 'deleted') {
-                        DB.DealFiles.destroy({
-                            where: { fileUrl, dealId },
+                        await DB.DealImages.destroy({
+                            where: { dealId, imageUrl },
                         });
                     }
                 },
             );
+
+            await Promise.all(imagePromises);
+        }
+
+        // 3. Handle files
+        if (files?.length) {
+            const filePromises = files.map(
+                async ({ fileUrl, status, fileName }: any) => {
+                    if (status === 'added') {
+                        const existingFile = await DB.DealFiles.findOne({
+                            where: { dealId, fileUrl },
+                        });
+
+                        if (!existingFile) {
+                            await DB.DealFiles.create({
+                                dealId,
+                                fileUrl,
+                                fileName,
+                            });
+                        }
+                    } else if (status === 'deleted') {
+                        await DB.DealFiles.destroy({
+                            where: { dealId, fileUrl },
+                        });
+                    }
+                },
+            );
+
             await Promise.all(filePromises);
+        }
+
+        // 4. Handle countries
+        if (countries?.length) {
+            const cities = await DB.Cities.findAll({
+                where: { name: { [Op.in]: countries } },
+                attributes: ['id'],
+            });
+
+            const cityIds = cities.map(city => city.id);
+
+            if (cityIds.length > 0) {
+                // Step 1: Get existing links
+                const existingLinks = await DB.DealCities.findAll({
+                    where: {
+                        dealId,
+                        cityId: { [Op.in]: cityIds },
+                    },
+                    attributes: ['cityId'],
+                });
+
+                const existingCityIds = existingLinks.map(link => link.cityId);
+
+                // Step 2: Only insert new ones
+                const newCityIds = cityIds.filter(
+                    cityId => !existingCityIds.includes(cityId),
+                );
+
+                if (newCityIds.length > 0) {
+                    await DB.DealCities.bulkCreate(
+                        newCityIds.map(cityId => ({
+                            dealId,
+                            cityId,
+                        })),
+                    );
+                }
+            }
         }
     },
 
