@@ -7,6 +7,8 @@ import UserRoleModel from './models/userrole.model';
 import FavoriteDealsModel from './models/favoritedeal.model';
 import UserFollowModel from './models/UserFollow.model';
 import OtpModel from './models/otp.model';
+import NotificationModel from './models/notification.model';
+
 
 import DealModel from './models/deal.model';
 
@@ -74,6 +76,7 @@ export const DB = {
     Conversations: conversationModel(sequelize),
     CustomAudienceModel: customAudienceModel(sequelize),
     Otp: OtpModel(sequelize),
+    Notification: NotificationModel(sequelize),
     sequelize, // connection instance (RAW queries)
     Sequelize, // library
 };

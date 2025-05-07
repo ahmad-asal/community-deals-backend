@@ -9,6 +9,8 @@ import commentsRouter from '@/modules/comments/comments.routes';
 import citiesRouter from '@/modules/city/city.routes';
 import conversationsRouter from '@/modules/conversation/conversation.routes';
 import messagesRouter from '@/modules/messages/messages.routes';
+import notificationsRouter from '@/modules/notification/notification.routes';
+
 const router = express.Router();
 
 router.use('/auth', authRouter);
@@ -20,5 +22,6 @@ router.use('/comments', commentsRouter);
 router.use('/cities', citiesRouter);
 router.use('/conversations', conversationsRouter);
 router.use('/messages', messagesRouter);
+router.use('/notification', notificationsRouter);
 
 export default router;

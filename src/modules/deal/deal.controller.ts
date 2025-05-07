@@ -5,6 +5,8 @@ import { CustomError } from '@/utils/custom-error';
 import { isValidDealStatus } from '@/interfaces/deal.interface';
 import { dealFilters } from './types';
 import { rolesTypes } from '@/interfaces/user.interfaces';
+import { NotificationService } from '@/services/notification.service';
+import { io } from '@/server';
 
 export const getDeals = async (
     req: Request,
@@ -124,7 +126,7 @@ export const updateStatus = async (
         const dealId = req.params.id as unknown as number;
         const { status } = req.body;
 
-        const dealExist = await dealRepo.getOne(parseInt(dealId));
+        const dealExist = await dealRepo.getOne(dealId);
 
         if (!dealExist) {
             throw new CustomError('deal not found', 404);
@@ -146,6 +148,34 @@ export const updateStatus = async (
 
         await dealRepo.updateStatus(dealId, status);
 
+        // Create notification for any status change
+        const notificationService = new NotificationService();
+        const notificationData = {
+            dealId: dealExist.id
+        };
+
+        let message = '';
+        switch(status) {
+            case 'Approved':
+                message = `Your deal "${dealExist.title}" has been approved`;
+                break;
+            case 'Rejected':
+                message = `Your deal "${dealExist.title}" has been rejected`;
+                break;
+            case 'In Review':
+                message = `Your deal "${dealExist.title}" is now under review`;
+                break;
+            default:
+                message = `Your deal "${dealExist.title}" status has been updated to ${status}`;
+        }
+
+        await notificationService.createNotification(
+            dealExist.autherId,
+            'deal',
+            message,
+            notificationData
+        );
+
         res.status(201).json({
             message: 'deal status successfully updated',
         });
@@ -153,6 +183,7 @@ export const updateStatus = async (
         next(error);
     }
 };
+
 export const updateDeal = async (
     req: Request,
     res: Response,
