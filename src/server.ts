@@ -13,7 +13,7 @@ import path from 'path';
 
 const appServer = express();
 const server = createServer(appServer);
-const io = new Server(server, {
+export const io = new Server(server, {
     cors: { origin: '*' },
 });
 
@@ -24,6 +24,13 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
+// Middleware
+appServer.use(cors(corsOptions));
+appServer.options('*', cors(corsOptions));
+appServer.use(express.json());
+appServer.use(express.urlencoded({ extended: true }));
+
+// Logging middleware
 appServer.use((req, res, next) => {
     const startTime = Date.now();
 
@@ -43,11 +50,6 @@ appServer.use((req, res, next) => {
     next();
 });
 
-// Middleware
-appServer.use(cors(corsOptions));
-appServer.options('*', cors(corsOptions));
-appServer.use(express.json());
-appServer.use(express.urlencoded({ extended: true }));
 appServer.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 appServer.use('/api', router);
 
@@ -68,6 +70,18 @@ appServer.use(errorHandler);
 // WebSocket logic
 io.on('connection', socket => {
     console.log('User connected:', socket.id);
+
+    // Join user's notification room
+    socket.on('joinNotifications', (userId: number) => {
+        socket.join(`notifications-${userId}`);
+        console.log(`User ${userId} joined notifications room`);
+    });
+
+    // Leave user's notification room
+    socket.on('leaveNotifications', (userId: number) => {
+        socket.leave(`notifications-${userId}`);
+        console.log(`User ${userId} left notifications room`);
+    });
 
     socket.on('messagesRead', async ({ userId, conversationId }) => {
         try {
@@ -98,6 +112,18 @@ io.on('connection', socket => {
             io.emit(`updateUnreadCount-${receiverId}`);
         } catch (error) {
             console.error('Error saving message via API:', error);
+        }
+    });
+
+    // Handle notification updates
+    socket.on('notificationCreated', async ({ userId }) => {
+        try {
+            console.log(`Notification created for user ${userId}`);
+            // Emit to the specific user's notification room
+            io.to(`notifications-${userId}`).emit('updateNotificationCount');
+            io.to(`notifications-${userId}`).emit('newNotification');
+        } catch (error) {
+            console.error('Error handling notification update:', error);
         }
     });
 

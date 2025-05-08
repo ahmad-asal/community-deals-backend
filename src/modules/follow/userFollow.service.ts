@@ -1,10 +1,12 @@
 import { UserFollowModel } from '@/database/models/UserFollow.model';
 import { UserModel } from '@/database/models/user.model';
 import { Op } from 'sequelize';
+import { NotificationService } from '@/services/notification.service';
 
 export class FollowService {
     public userFollowModel = UserFollowModel;
     public userModel = UserModel;
+    private notificationService = new NotificationService();
 
     /**
      * Follow a user
@@ -40,6 +42,18 @@ export class FollowService {
             followerId,
             followingId,
         });
+
+        // Create notification for the user being followed
+        await this.notificationService.createNotification(
+            followingId,
+            'FOLLOW',
+            `${follower?.name} started following you`,
+            {
+                followerId,
+                followerName: follower?.name,
+                followerImage: follower?.profileImg
+            }
+        );
 
         return follow;
     }
