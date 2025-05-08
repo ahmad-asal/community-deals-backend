@@ -24,6 +24,13 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
+// Middleware
+appServer.use(cors(corsOptions));
+appServer.options('*', cors(corsOptions));
+appServer.use(express.json());
+appServer.use(express.urlencoded({ extended: true }));
+
+// Logging middleware
 appServer.use((req, res, next) => {
     const startTime = Date.now();
 
@@ -43,11 +50,6 @@ appServer.use((req, res, next) => {
     next();
 });
 
-// Middleware
-appServer.use(cors(corsOptions));
-appServer.options('*', cors(corsOptions));
-appServer.use(express.json());
-appServer.use(express.urlencoded({ extended: true }));
 appServer.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 appServer.use('/api', router);
 
