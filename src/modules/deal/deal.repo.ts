@@ -185,7 +185,7 @@ const repo = {
                         required: false,
                     },
                 ],
-                order: [['id', 'DESC']],
+                order: [['updatedAt', 'DESC']],
             });
 
             // **Skip audience filtering if the user is an admin**
