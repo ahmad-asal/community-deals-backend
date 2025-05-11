@@ -51,8 +51,8 @@ export class FollowService {
             {
                 followerId,
                 followerName: follower?.name,
-                followerImage: follower?.profileImg
-            }
+                followerImage: follower?.profileImg,
+            },
         );
 
         return follow;
@@ -104,7 +104,7 @@ export class FollowService {
             include: [
                 {
                     model: this.userModel,
-                    as: 'followers',
+                    as: 'following',
                     where: { id: userId },
                     attributes: [],
                 },
@@ -131,7 +131,7 @@ export class FollowService {
             include: [
                 {
                     model: this.userModel,
-                    as: 'following',
+                    as: 'followers',
                     where: { id: userId },
                     attributes: [],
                 },
