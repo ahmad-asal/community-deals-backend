@@ -96,25 +96,22 @@ const repo = {
         if (filters.intrestedOnly) {
             clientCountryRequest = null;
         }
-
         // If no countries are passed in the filter, use the clientCountry parameter
 
-        if (
-            (!filters.countries || filters.countries.length === 0) &&
-            !isAdmin
-        ) {
-            if (clientCountryRequest) {
-                whereConditions[Op.or] = [
-                    { '$cities.country$': { [Op.in]: [clientCountryRequest] } }, // Apply clientCountryRequest if it's defined
-                    { '$cities.country$': { [Op.is]: null } }, // Include deals with no country
-                ];
-            }
-        } else if (filters?.countries?.length > 0) {
-            // If countries are provided in the filters, apply that condition
+        let applyCountryFilter = false;
+
+        if (filters.countries?.length > 0) {
+            // User applied a country filter explicitly
+            applyCountryFilter = true;
             whereConditions[Op.or] = [
-                { '$cities.country$': { [Op.in]: filters.countries } }, // Deals in selected countries
+                { '$cities.country$': { [Op.in]: filters.countries } },
                 { '$cities.country$': { [Op.is]: null } }, // Deals with no country
             ];
+        } else if (!isAdmin) {
+            // No country filter provided
+            if (clientCountryRequest) {
+                applyCountryFilter = true;
+            }
         }
 
         try {
@@ -185,7 +182,7 @@ const repo = {
                         required: false,
                     },
                 ],
-                order: [['id', 'DESC']],
+                order: [['updatedAt', 'DESC']],
             });
 
             // **Skip audience filtering if the user is an admin**
@@ -196,34 +193,45 @@ const repo = {
             // Filter deals based on audience type
             const filteredDeals = await Promise.all(
                 deals.map(async (deal: any) => {
-                    if (
-                        deal.audience === 'public' ||
-                        deal.auther.id === userId
-                    ) {
-                        return deal; // Everyone can see
-                    }
+                    const isAuthor = deal.auther?.id === userId;
 
-                    if (deal.audience === 'friends') {
-                        const isFollowing = await DB.UserFollowModel.findOne({
-                            where: {
-                                followerId: userId, // Logged-in user
-                                followingId: deal.auther.id, // Deal creator
-                            },
-                        });
-                        return isFollowing ? deal : null; // Only followers can see
-                    }
+                    // Check if user is a follower (if audience is 'friends')
+                    const isFollower =
+                        deal.audience === 'friends'
+                            ? await DB.UserFollowModel.findOne({
+                                  where: {
+                                      followerId: userId,
+                                      followingId: deal.auther.id,
+                                  },
+                              })
+                            : null;
 
-                    if (deal.audience === 'custom') {
-                        const isAuthorized = await CustomAudienceModel.findOne({
-                            where: {
-                                dealId: deal.id,
-                                userId: userId,
-                            },
-                        });
-                        return isAuthorized ? deal : null; // Only selected users can see
-                    }
+                    // Check if user is in custom audience (if audience is 'custom')
+                    const isCustom =
+                        deal.audience === 'custom'
+                            ? await CustomAudienceModel.findOne({
+                                  where: {
+                                      dealId: deal.id,
+                                      userId: userId,
+                                  },
+                              })
+                            : null;
 
-                    return null; // Hide the deal if no conditions are met
+                    // Apply country filter only if needed
+                    const countries = deal.cities
+                        ?.map((city: any) => city.country)
+                        .filter(Boolean);
+                    const isInTargetCountry =
+                        !applyCountryFilter ||
+                        !countries.length ||
+                        countries.includes(clientCountryRequest);
+
+                    const canView =
+                        deal.audience === 'public'
+                            ? isInTargetCountry || isAuthor || isFollower
+                            : isAuthor || isFollower || isCustom;
+
+                    return canView ? deal : null;
                 }),
             );
 
