@@ -21,7 +21,8 @@ export const saveOTP = async (email: string, otp: string) => {
     await DB.Otp.create({
         email,
         otp,
-        expiresAt,
+        expiresAt: expiresAt.toISOString(), // Convert to string for database storage
+        isUsed: false
     });
 };
 

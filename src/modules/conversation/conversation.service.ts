@@ -49,11 +49,15 @@ const conversationService = {
             );
         }
 
-        return await conversationRepo.deleteConversation(
-            conversationId,
-            userId,
-        );
+        // Verify that the user is part of the conversation before deleting
+        const conversation = await conversationRepo.getConversationBetweenUsers(userId, conversationId);
+        if (!conversation) {
+            throw new CustomError('Conversation not found or access denied.', 404);
+        }
+
+        return await conversationRepo.deleteConversation(conversationId);
     },
+
     unreadMsgsCount: async (accessToken: string) => {
         const decodeToken: JwtPayload = await verifyJWT(
             accessToken,
