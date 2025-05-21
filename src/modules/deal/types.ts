@@ -9,4 +9,5 @@ export type dealFilters = {
     country?: string;
     type?: 'I Want to' | 'I Need to' | 'Other';
     countries?: any;
+    isTrending?: boolean;
 };

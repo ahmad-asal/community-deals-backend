@@ -20,6 +20,18 @@ const repo = {
 
         const whereConditions: any = {};
 
+        // // Add trending filter condition
+        // if (filters.isTrending) {
+        //     // Only show deals not already interested by the user
+        //     whereConditions[Op.not] = [
+        //         Sequelize.literal(`EXISTS (
+        //         SELECT 1 FROM "favorite_deal" AS ufd
+        //         WHERE ufd."dealId" = "deals"."id"
+        //         AND ufd."userId" = ${userId}
+        //     )`),
+        //     ];
+        // }
+
         if (filters.status === 'In Review' && !isAdmin) {
             filters.authorId = userId;
         }
@@ -124,6 +136,15 @@ const repo = {
                   )`),
                             'isInterested',
                         ],
+                        // Add count of interested users for trending sort
+                        [
+                            Sequelize.literal(`(
+                            SELECT COUNT(*) 
+                            FROM "favorite_deal" AS fd 
+                            WHERE fd."dealId" = "deals"."id"
+                        )`),
+                            'interestedCount',
+                        ],
                     ],
                 },
                 where: whereConditions,
@@ -175,7 +196,13 @@ const repo = {
                         required: false,
                     },
                 ],
-                order: [['updatedAt', 'DESC']],
+                order: filters.isTrending
+                    ? [
+                          [Sequelize.literal('"interestedCount"'), 'DESC'],
+                          ['updatedAt', 'DESC'],
+                      ]
+                    : [['updatedAt', 'DESC']],
+                ...(filters.isTrending && { limit: 10 }),
             });
 
             if (isAdmin) {
