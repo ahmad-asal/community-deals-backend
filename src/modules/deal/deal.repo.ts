@@ -20,6 +20,18 @@ const repo = {
 
         const whereConditions: any = {};
 
+        // // Add trending filter condition
+        // if (filters.isTrending) {
+        //     // Only show deals not already interested by the user
+        //     whereConditions[Op.not] = [
+        //         Sequelize.literal(`EXISTS (
+        //         SELECT 1 FROM "favorite_deal" AS ufd
+        //         WHERE ufd."dealId" = "deals"."id"
+        //         AND ufd."userId" = ${userId}
+        //     )`),
+        //     ];
+        // }
+
         if (filters.status === 'In Review' && !isAdmin) {
             filters.authorId = userId;
         }
@@ -96,22 +108,16 @@ const repo = {
         if (filters.intrestedOnly) {
             clientCountryRequest = null;
         }
-        // If no countries are passed in the filter, use the clientCountry parameter
 
         let applyCountryFilter = false;
 
+        // Only apply country filter if countries are explicitly specified in filters
         if (filters.countries?.length > 0) {
-            // User applied a country filter explicitly
             applyCountryFilter = true;
             whereConditions[Op.or] = [
                 { '$cities.country$': { [Op.in]: filters.countries } },
                 { '$cities.country$': { [Op.is]: null } }, // Deals with no country
             ];
-        } else if (!isAdmin) {
-            // No country filter provided
-            if (clientCountryRequest) {
-                applyCountryFilter = true;
-            }
         }
 
         try {
@@ -130,26 +136,34 @@ const repo = {
                   )`),
                             'isInterested',
                         ],
+                        // Add count of interested users for trending sort
+                        [
+                            Sequelize.literal(`(
+                            SELECT COUNT(*) 
+                            FROM "favorite_deal" AS fd 
+                            WHERE fd."dealId" = "deals"."id"
+                        )`),
+                            'interestedCount',
+                        ],
                     ],
                 },
                 where: whereConditions,
                 include: [
                     {
                         model: DealImageModel,
-                        as: 'images', // Match the alias in the association
+                        as: 'images',
                     },
                     {
                         model: DealFileModel,
-                        as: 'files', // Match the alias in the association
+                        as: 'files',
                     },
                     {
                         model: DB.User,
                         attributes: [],
-                        through: { attributes: [] }, // Join table // where: { userId }
-
-                        where: { id: userId || undefined }, // Filter for specific user if userId is provided
+                        through: { attributes: [] },
+                        where: { id: userId || undefined },
                         as: 'interestedUsers',
-                        required: filters.intrestedOnly, // Only include deals that the user is interested in if userId exists
+                        required: filters.intrestedOnly,
                     },
                     {
                         model: DB.User,
@@ -182,10 +196,15 @@ const repo = {
                         required: false,
                     },
                 ],
-                order: [['updatedAt', 'DESC']],
+                order: filters.isTrending
+                    ? [
+                          [Sequelize.literal('"interestedCount"'), 'DESC'],
+                          ['updatedAt', 'DESC'],
+                      ]
+                    : [['updatedAt', 'DESC']],
+                ...(filters.isTrending && { limit: 10 }),
             });
 
-            // **Skip audience filtering if the user is an admin**
             if (isAdmin) {
                 return deals;
             }
@@ -195,16 +214,13 @@ const repo = {
                 deals.map(async (deal: any) => {
                     const isAuthor = deal.auther?.id === userId;
 
-                    // Check if user is a follower (if audience is 'friends')
-                    const isFollower =
-                        deal.audience === 'friends'
-                            ? await DB.UserFollowModel.findOne({
-                                  where: {
-                                      followerId: userId,
-                                      followingId: deal.auther.id,
-                                  },
-                              })
-                            : null;
+                    // Check if user is a follower
+                    const isFollower = await DB.UserFollowModel.findOne({
+                        where: {
+                            followerId: userId,
+                            followingId: deal.auther.id,
+                        },
+                    });
 
                     // Check if user is in custom audience (if audience is 'custom')
                     const isCustom =
@@ -217,7 +233,12 @@ const repo = {
                               })
                             : null;
 
-                    // Apply country filter only if needed
+                    // Skip country check for followers
+                    if (isFollower) {
+                        return deal;
+                    }
+
+                    // Apply country filter only if needed and user is not a follower
                     const countries = deal.cities
                         ?.map((city: any) => city.country)
                         .filter(Boolean);
@@ -228,14 +249,14 @@ const repo = {
 
                     const canView =
                         deal.audience === 'public'
-                            ? isInTargetCountry || isAuthor || isFollower
-                            : isAuthor || isFollower || isCustom;
+                            ? isInTargetCountry || isAuthor
+                            : isAuthor || isCustom;
 
                     return canView ? deal : null;
                 }),
             );
 
-            return filteredDeals.filter(Boolean); // Remove `null` values
+            return filteredDeals.filter(Boolean);
         } catch (error) {
             console.error('Error fetching deals:', error);
             return null;

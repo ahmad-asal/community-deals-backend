@@ -27,6 +27,7 @@ export const getDeals = async (
                 country,
                 type,
                 countries,
+                isTrending = false,
             },
         } = req;
 
@@ -53,6 +54,7 @@ export const getDeals = async (
             authorId: authorId ? Number(authorId) : undefined,
             countries: normalizedCountries,
             type: type as 'I Want to' | 'I Need to' | 'Other' | undefined,
+            isTrending: isTrending as boolean,
         };
 
         const isAdmin = userRoles.includes(rolesTypes.admin);
@@ -151,11 +153,11 @@ export const updateStatus = async (
         // Create notification for any status change
         const notificationService = new NotificationService();
         const notificationData = {
-            dealId: dealExist.id
+            dealId: dealExist.id,
         };
 
         let message = '';
-        switch(status) {
+        switch (status) {
             case 'Approved':
                 message = `Your deal "${dealExist.title}" has been approved`;
                 break;
@@ -173,7 +175,7 @@ export const updateStatus = async (
             dealExist.autherId,
             'deal',
             message,
-            notificationData
+            notificationData,
         );
 
         res.status(201).json({
